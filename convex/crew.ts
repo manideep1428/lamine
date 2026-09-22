@@ -28,6 +28,7 @@ const FALLBACK_SPEC: NuggetSpec = {
   requirements: [],
   behavioralTests: [],
   data: [],
+  parts: [],
   skills: [],
   deploy: { target: "web" },
 }

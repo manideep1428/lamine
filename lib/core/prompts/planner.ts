@@ -82,6 +82,19 @@ ${asKidInput(spec.nugget.goal, "kid_goal")}`,
     )
   }
 
+  if (spec.parts.length) {
+    parts.push(
+      `## What is wired to the board\n` +
+        spec.parts
+          .map(
+            (p) =>
+              `- ${sanitizePlaceholder(p.part)} on pin ${sanitizePlaceholder(p.pin)}`
+          )
+          .join("\n") +
+        `\nNever use a pin that is not in this list.`
+    )
+  }
+
   if (spec.data.length) {
     parts.push(
       `## Should still be there next visit\n` +

@@ -11,7 +11,7 @@ import { BLOCK, type BlockState, type WorkspaceState } from "./core/blocks"
 export interface ExampleNugget {
   id: string
   name: string
-  category: "game" | "web"
+  category: "game" | "web" | "device"
   description: string
   workspace: WorkspaceState
 }
@@ -47,6 +47,10 @@ function feature(what: string, ...checks: string[]): BlockState {
 
 function whenThen(when: string, then: string, ...checks: string[]): BlockState {
   return b(BLOCK.whenThen, { WHEN: when, THEN: then }, proofs(...checks))
+}
+
+function part(what: string, pin: string): BlockState {
+  return b(BLOCK.part, { PART: what, PIN: pin })
 }
 
 function workspace(
@@ -187,6 +191,40 @@ export const EXAMPLES: ExampleNugget[] = [
         feature("have a button that sends a message to my grown-up"),
         whenThen("someone clicks a card", "it gently grows"),
         b(BLOCK.style, { VISUAL: "clean", PERSONALITY: "friendly" }),
+        b(BLOCK.show),
+      ]
+    ),
+  },
+  {
+    id: "night-light",
+    name: "Night Light",
+    category: "device",
+    description:
+      "A light on your ESP32 that turns itself on in the dark, with a button to force it on.",
+    workspace: workspace(
+      {
+        KIND: "device",
+        GOAL: "a night light that knows when the room is dark",
+        FRAMEWORK: "canvas",
+      },
+      [
+        part("LED", "13"),
+        part("light sensor", "34"),
+        part("button", "12"),
+        feature(
+          "turn the light on when the room gets dark",
+          "the light pin is set high when the sensor reads dark"
+        ),
+        whenThen(
+          "I press the button",
+          "turn the light on even if it is bright",
+          "the button pin is read with a pull-up"
+        ),
+        feature(
+          "print what it is doing to the Serial Monitor so I can watch it",
+          "every change prints one line"
+        ),
+        b(BLOCK.remembers, { WHAT: "whether I forced the light on" }),
         b(BLOCK.show),
       ]
     ),

@@ -21,14 +21,17 @@ export const CAPS = {
   skillName: 100,
   skillPrompt: 5000,
   styleValue: 60,
+  partName: 40,
+  pin: 12,
   requirements: 30,
   behaviors: 30,
   data: 10,
   skills: 10,
+  parts: 10,
 } as const
 
-export const PROJECT_KINDS = ["game", "website"] as const
-export const FRAMEWORKS = ["canvas", "phaser", "p5", "none"] as const
+export const PROJECT_KINDS = ["game", "website", "device"] as const
+export const FRAMEWORKS = ["canvas", "phaser", "p5", "arduino", "none"] as const
 export const VISUAL_STYLES = [
   "retro",
   "pastel",
@@ -39,6 +42,18 @@ export const VISUAL_STYLES = [
 
 export type ProjectKind = (typeof PROJECT_KINDS)[number]
 export type Framework = (typeof FRAMEWORKS)[number]
+
+/**
+ * Something physically wired to the board.
+ *
+ * Only meaningful when `nugget.kind` is `device`. The pin stays a string because
+ * boards label them `13`, `A0`, `GPIO4` and `D2`, and a child copies whatever is
+ * printed next to the socket rather than a number we can validate.
+ */
+export const PartSchema = z.strictObject({
+  part: z.string().min(1).max(CAPS.partName),
+  pin: z.string().max(CAPS.pin),
+})
 
 export const BehavioralTestSchema = z.strictObject({
   id: z.string().max(64),
@@ -77,6 +92,11 @@ export const NuggetSpecSchema = z.strictObject({
   behavioralTests: z.array(BehavioralTestSchema).max(CAPS.behaviors),
   /** Things the project should remember between visits (high score, name). */
   data: z.array(z.string().max(CAPS.dataNote)).max(CAPS.data),
+  /**
+   * What is wired to the board, for a `device` project. Defaults to empty so a
+   * project saved before devices existed still validates.
+   */
+  parts: z.array(PartSchema).max(CAPS.parts).default([]),
   skills: z.array(SkillSchema).max(CAPS.skills),
   deploy: z.strictObject({ target: z.literal("web") }),
 })
@@ -84,6 +104,7 @@ export const NuggetSpecSchema = z.strictObject({
 export type NuggetSpec = z.infer<typeof NuggetSpecSchema>
 export type BehavioralTest = z.infer<typeof BehavioralTestSchema>
 export type Requirement = z.infer<typeof RequirementSchema>
+export type Part = z.infer<typeof PartSchema>
 
 /** A warning is a nudge shown in the UI, never a blocker. */
 export interface SpecWarning {
@@ -100,6 +121,8 @@ export interface SpecDraft {
   requirements: Requirement[]
   behavioralTests: BehavioralTest[]
   data: string[]
+  /** Optional so every existing caller keeps compiling; a device project sets it. */
+  parts?: Part[]
   skills: { name: string; prompt: string }[]
 }
 
@@ -236,6 +259,16 @@ export function finalizeSpec(draft: SpecDraft): {
       "things to remember",
       warnings
     ).map((d) => clampText(d, CAPS.dataNote, "data", warnings)),
+    parts: clampList(
+      draft.parts ?? [],
+      CAPS.parts,
+      "parts",
+      "parts",
+      warnings
+    ).map((p) => ({
+      part: clampText(p.part, CAPS.partName, "part", warnings),
+      pin: clampText(p.pin, CAPS.pin, "part.pin", warnings),
+    })),
     skills: clampList(
       draft.skills,
       CAPS.skills,
@@ -267,6 +300,12 @@ export function readiness(spec: NuggetSpec | null): {
     reasons.push("Tell me what you want to make in the Goal block.")
   if (spec.requirements.length === 0 && spec.behavioralTests.length === 0) {
     reasons.push("Add at least one 'It must…' block so I know what to build.")
+  }
+  // A board with nothing wired to it has no way to do anything.
+  if (spec.nugget.kind === "device" && spec.parts.length === 0) {
+    reasons.push(
+      "Add a 🔌 part block so I know what's plugged into your board."
+    )
   }
   return { ready: reasons.length === 0, reasons }
 }

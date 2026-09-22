@@ -9,6 +9,7 @@
  * case where the tab closed mid-sync.
  */
 
+import type { ProjectKind } from "./core/spec"
 import { randomId } from "./identity"
 
 const INDEX_KEY = "lamine:projects"
@@ -20,7 +21,7 @@ export interface LocalProject {
   /** Capability key. Possession of this is the permission — never shown in UI. */
   secret: string
   name: string
-  kind: "game" | "website"
+  kind: ProjectKind
   workspace: string
   updatedAt: number
 }
@@ -29,7 +30,7 @@ export interface LocalProject {
 export interface RemoteProject {
   id: string
   name: string
-  kind: "game" | "website"
+  kind: ProjectKind
   workspace: string
   updatedAt: number
 }

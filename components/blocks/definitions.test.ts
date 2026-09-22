@@ -488,4 +488,3 @@ describe("dropping bricks directly onto blocks", () => {
     expect(result.message).toMatch(/already have a Goal brick/)
   })
 })
-

@@ -14,7 +14,7 @@
  * actually read the result — which is the whole point of the code drawer.
  */
 
-import type { Framework } from "../spec"
+import type { Framework, ProjectKind } from "../spec"
 
 const MULTI_FILE = `### File ownership (important)
 Agents work one at a time over the same project folder. If two agents write the same file, one silently overwrites the other and the project breaks. So:
@@ -169,10 +169,52 @@ Anti-patterns:
 - Do NOT use a div with a click handler where a <button> belongs.
 - Do NOT ask for a real name, address, school, or photo.`
 
+const ARDUINO = `## How to build this: an ESP32 sketch
+This project runs on a microcontroller, not in a browser. There is no screen, no
+DOM and no window. Write an Arduino sketch a child can open and upload.
+
+${MULTI_FILE}
+
+File layout:
+\`\`\`
+sketch/sketch.ino    setup() and loop() - the only file the Arduino IDE opens
+sketch/pins.h        every pin number, named once
+sketch/README.md     what to wire where, and how to upload it
+\`\`\`
+
+The .ino file must be inside a folder of the same name. The Arduino IDE requires
+that, and a child double-clicks it.
+
+Patterns:
+- Put every pin in pins.h as \`const int LED_PIN = 13;\`. Never repeat a raw pin
+  number anywhere else.
+- \`setup()\` calls \`pinMode\` for every pin, then \`Serial.begin(115200)\`.
+- Print what is happening with \`Serial.println\` so a child can watch it in the
+  Serial Monitor. This is the only way they can see inside a board.
+- Read a button with \`INPUT_PULLUP\` and treat LOW as pressed. Say so in a comment,
+  because it surprises everyone the first time.
+- Debounce a button by remembering the last change time in a \`unsigned long\`.
+- Keep \`loop()\` short and readable: one named function per behaviour.
+
+Anti-patterns:
+- Do NOT use \`delay()\` for anything a child will wait on. It freezes the whole
+  board, including buttons. Use \`millis()\` to check whether enough time has
+  passed.
+- Do NOT use WiFi, Bluetooth, HTTP or MQTT unless a brick explicitly asks for it.
+- Do NOT write to pins the child did not list. Extra pins may have something else
+  attached, and writing to the wrong one can damage a board.
+- Do NOT use pins 6-11 on a classic ESP32 board; they are wired to flash memory.
+- Do NOT invent a library. Only the Arduino core and what the child listed.
+
+README.md must contain, in plain language a 10-year-old can follow: a wiring list
+(one line per part, naming the pin), and the upload steps (open the folder in the
+Arduino IDE, pick the ESP32 board, pick the port, press upload).`
+
 const BY_FRAMEWORK: Record<Framework, string> = {
   canvas: CANVAS,
   phaser: PHASER,
   p5: P5,
+  arduino: ARDUINO,
   none: WEBSITE,
 }
 
@@ -197,8 +239,12 @@ Do not add any other postMessage call, and do not send anything else to the pare
 /** Guidance block to append to a builder's system prompt. */
 export function frameworkGuidance(
   framework: Framework,
-  kind: "game" | "website"
+  kind: ProjectKind
 ): string {
+  // A board has no window.onerror to report from, so the browser error bridge
+  // would be instructions for an API that does not exist there.
+  if (kind === "device") return ARDUINO
+
   // A website never wants game-loop guidance even if the block said "canvas".
   const base =
     kind === "website" ? WEBSITE : (BY_FRAMEWORK[framework] ?? CANVAS)
@@ -208,8 +254,11 @@ export function frameworkGuidance(
 /** Files the scaffold task is expected to create, used to sanity-check plans. */
 export function expectedScaffold(
   framework: Framework,
-  kind: "game" | "website"
+  kind: ProjectKind
 ): string[] {
+  if (kind === "device") {
+    return ["sketch/sketch.ino", "sketch/pins.h", "sketch/README.md"]
+  }
   if (kind === "website") {
     return ["index.html", "styles/base.css", "styles/theme.css", "src/main.js"]
   }

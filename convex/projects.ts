@@ -32,7 +32,7 @@ async function assertAccess(
 export const create = mutation({
   args: {
     name: v.string(),
-    kind: v.union(v.literal("game"), v.literal("website")),
+    kind: v.union(v.literal("game"), v.literal("website"), v.literal("device")),
     ownerId: v.string(),
     secret: v.string(),
     workspace: v.string(),

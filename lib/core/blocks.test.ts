@@ -320,11 +320,24 @@ describe("bundled examples", () => {
   )
 
   it("matches the declared category to the interpreted kind", () => {
+    const expected = { game: "game", web: "website", device: "device" } as const
     for (const example of EXAMPLES) {
       const spec = interpretWorkspace(example.workspace).spec!
-      expect(spec.nugget.kind).toBe(
-        example.category === "game" ? "game" : "website"
-      )
+      expect(spec.nugget.kind, example.id).toBe(expected[example.category])
+    }
+  })
+
+  it("gives a device example its parts and the arduino target", () => {
+    for (const example of EXAMPLES.filter((e) => e.category === "device")) {
+      const spec = interpretWorkspace(example.workspace).spec!
+      // A board project is built as a sketch, whatever the Goal brick's drawing
+      // dropdown happens to say.
+      expect(spec.framework, example.id).toBe("arduino")
+      expect(spec.parts.length, example.id).toBeGreaterThan(0)
+      for (const part of spec.parts) {
+        expect(part.part, example.id).not.toBe("")
+        expect(part.pin, example.id).not.toBe("")
+      }
     }
   })
 

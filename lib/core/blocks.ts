@@ -30,6 +30,7 @@ export const BLOCK = {
   proof: "lamine_proof",
   style: "lamine_style",
   rule: "lamine_rule",
+  part: "lamine_part",
   show: "lamine_show",
 } as const
 
@@ -43,6 +44,7 @@ export const BODY_BLOCKS: readonly string[] = [
   BLOCK.remembers,
   BLOCK.style,
   BLOCK.rule,
+  BLOCK.part,
   BLOCK.show,
 ]
 
@@ -89,11 +91,17 @@ function str(value: unknown): string {
 }
 
 function isKind(v: string): v is ProjectKind {
-  return v === "game" || v === "website"
+  return v === "game" || v === "website" || v === "device"
 }
 
 function isFramework(v: string): v is Framework {
-  return v === "canvas" || v === "phaser" || v === "p5" || v === "none"
+  return (
+    v === "canvas" ||
+    v === "phaser" ||
+    v === "p5" ||
+    v === "arduino" ||
+    v === "none"
+  )
 }
 
 /** Walk a `next` chain into a flat list. */
@@ -169,6 +177,9 @@ export function interpretWorkspace(
   let framework: Framework = isFramework(frameworkRaw) ? frameworkRaw : "canvas"
   // A website has no game loop; canvas/phaser/p5 would just confuse the planner.
   if (kind === "website") framework = "none"
+  // A board runs a sketch, not a drawing library. The Goal brick's framework
+  // dropdown is about how a screen is drawn, so it means nothing here.
+  if (kind === "device") framework = "arduino"
 
   const goalText = str(goal.fields?.GOAL)
   if (!goalText) problems.push("Type what you want to make in the Goal block.")
@@ -179,6 +190,7 @@ export function interpretWorkspace(
     requirements: [],
     behavioralTests: [],
     data: [],
+    parts: [],
     skills: [],
   }
 
@@ -243,6 +255,12 @@ export function interpretWorkspace(
         break
       }
 
+      case BLOCK.part: {
+        const part = str(block.fields?.PART)
+        if (part) draft.parts?.push({ part, pin: str(block.fields?.PIN) })
+        break
+      }
+
       case BLOCK.show:
         sawShow = true
         break
@@ -256,6 +274,11 @@ export function interpretWorkspace(
 
   if (draft.requirements.length === 0) {
     problems.push("Add at least one 'It must…' block so I know what to build.")
+  }
+  if (kind === "device" && (draft.parts?.length ?? 0) === 0) {
+    problems.push(
+      "Add a 🔌 part block so I know what's plugged into your board."
+    )
   }
   if (!sawShow) {
     problems.push("Snap a 'Show it in my browser' block on the end.")

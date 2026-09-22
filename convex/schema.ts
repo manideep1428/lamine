@@ -10,7 +10,7 @@ import { v } from "convex/values"
 export default defineSchema({
   projects: defineTable({
     name: v.string(),
-    kind: v.union(v.literal("game"), v.literal("website")),
+    kind: v.union(v.literal("game"), v.literal("website"), v.literal("device")),
     ownerId: v.string(),
     /** Capability key. Never rendered in the UI. */
     secret: v.string(),

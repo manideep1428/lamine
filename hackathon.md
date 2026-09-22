@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** gpt-5.6-luna
 - **Started:** 2026-09-22T05:05:26Z
-- **Last updated:** 2026-09-22T16:33:12Z
+- **Last updated:** 2026-09-22T16:57:18Z
 
 ## Log
 
@@ -105,3 +105,17 @@ the code as it actually stands: the palette section described colours the UI no
 longer uses, so the old document was both derivative and stale. Updated the eight
 source files that cited it. 232 tests still pass, which is the check that the pass
 touched only comments.
+### 2026-09-22 - working tree
+Added a device target, so a child can describe something physical and get an ESP32
+sketch they can upload. A new brick says what is wired to which pin, the Goal brick
+gained a "thing with a board" kind, and a board project is routed to Arduino
+guidance rather than a drawing library (`lib/core/spec.ts`, `lib/core/blocks.ts`,
+`components/blocks/definitions.ts`, `lib/core/prompts/frameworks.ts`). The existing
+zip export is the delivery path, so no new plumbing was needed. A Night Light
+starter set ships with it.
+
+The honest limit is written into the prompts: firmware cannot run in the sandbox,
+so the tester is told it can check structure and never claim a behaviour was
+observed, and both the planner and the builder are told never to touch a pin the
+child did not list. Compiling the sketch and flashing over Web Serial are the next
+steps, not part of this. 244 tests.

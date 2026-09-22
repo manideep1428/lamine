@@ -20,7 +20,7 @@ import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
 import { bump, useHydrated, useLocalProject } from "@/hooks/use-local"
 import type { WorkspaceState } from "@/lib/core/blocks"
-import type { NuggetSpec } from "@/lib/core/spec"
+import type { NuggetSpec, ProjectKind } from "@/lib/core/spec"
 import { loadNewest, saveLocalProject } from "@/lib/storage"
 
 /** How long after the last block change we write to Convex. */
@@ -32,7 +32,7 @@ export interface StudioProject {
   status: ProjectStatus
   secret: string | null
   name: string
-  kind: "game" | "website"
+  kind: ProjectKind
   /** Fed to the canvas at mount; the canvas owns the workspace afterwards. */
   initialWorkspace: WorkspaceState | null
   sandboxId: string | null
@@ -156,7 +156,7 @@ export function useStudioProject(projectId: Id<"projects">): StudioProject {
       })
   }, [projectId, saveWorkspace, secret])
 
-  const kind: "game" | "website" = local?.kind ?? project?.kind ?? "game"
+  const kind: ProjectKind = local?.kind ?? project?.kind ?? "game"
 
   const save = useCallback(
     (workspace: WorkspaceState, spec: NuggetSpec | null) => {

@@ -115,6 +115,34 @@ This project runs in a browser. Do NOT try to import or require the game/page co
 - assert simple pure logic by copying the relevant function body into the test where that is practical.
 Write tests to tests/ as plain Node scripts. Print exactly one line per test: \`PASS: <name>\` or \`FAIL: <name>\`. Then run the file with \`node\` and report what you saw. Never claim a test passed without running it.`
 
+/**
+ * Tester-only, for a device project.
+ *
+ * Firmware cannot run in the sandbox: there is no board attached. This is the
+ * honest limit of what a check can mean here, and the prompt says so plainly so
+ * the tester never claims to have observed behaviour it could not observe.
+ */
+const FIRMWARE_TESTING = `## How to check a sketch you cannot run
+This project is firmware for a microcontroller. There is no board attached, so you
+CANNOT run it, and you must never claim a behaviour was observed. Do NOT install
+anything and do NOT try to emulate the board.
+
+What you can genuinely check, and should:
+- the expected files exist, and the .ino file sits in a folder of the same name,
+- every pin the child listed appears in pins.h exactly once, and nothing writes to
+  a pin they did not list,
+- setup() calls pinMode for every pin used, and Serial.begin is present,
+- loop() does not call delay() where the child has to wait on something, because
+  that freezes buttons,
+- each "check that..." the child wrote maps to a named function or handler that
+  plainly implements it, quoted in your summary,
+- no WiFi, Bluetooth or library the child never asked for.
+
+Write these as Node scripts in tests/ that read the sketch as text and print
+exactly one line per check: \`PASS: <name>\` or \`FAIL: <name>\`. Then run them. In
+your summary, say clearly that these are structural checks, and that the child
+should watch the Serial Monitor to see it really work.`
+
 export const ROLE_MODULES: Record<
   "builder" | "tester" | "reviewer",
   RoleModule
@@ -222,7 +250,11 @@ export function buildSystemPrompt(input: SystemPromptInput): string {
     ),
     // 11
     role.reportingFormat,
-    ...(role.extras ?? []),
+    // A device project swaps the tester's browser rule for the firmware one: a
+    // board cannot be run in the sandbox, and a rule about jsdom would be noise.
+    ...(input.role === "tester" && input.spec.nugget.kind === "device"
+      ? [FIRMWARE_TESTING]
+      : (role.extras ?? [])),
     // Builders get the concrete file layout for their framework. Without it they
     // invent a different structure every run and the code drawer stops being
     // readable — which is most of the point of showing a child the code.
@@ -281,6 +313,19 @@ export function buildTaskPrompt(input: TaskPromptInput): string {
               `- When ${sanitizePlaceholder(b.when)}, then ${sanitizePlaceholder(b.then)}`
           )
           .join("\n")
+    )
+  }
+
+  if (input.spec.parts.length) {
+    parts.push(
+      `## What is wired to the board\n` +
+        input.spec.parts
+          .map(
+            (p) =>
+              `- ${sanitizePlaceholder(p.part)} on pin ${sanitizePlaceholder(p.pin)}`
+          )
+          .join("\n") +
+        `\nNever read or write a pin that is not in this list.`
     )
   }
 

@@ -50,6 +50,7 @@ export const BLOCK_COLOUR: Record<string, BrickColour> = {
   [BLOCK.whenThen]: "green",
   [BLOCK.remembers]: "green",
   [BLOCK.proof]: "amber",
+  [BLOCK.part]: "teal",
   [BLOCK.style]: "purple",
   [BLOCK.rule]: "purple",
   [BLOCK.show]: "red",
@@ -89,6 +90,7 @@ const BLOCK_JSON: object[] = [
         options: [
           ["game", "game"],
           ["website", "website"],
+          ["thing with a board", "device"],
         ],
       },
     ],
@@ -217,6 +219,35 @@ const BLOCK_JSON: object[] = [
     helpUrl: "",
   },
   {
+    type: BLOCK.part,
+    message0: "🔌 It has a %1",
+    args0: [
+      {
+        type: "field_dropdown",
+        name: "PART",
+        options: [
+          ["light (LED)", "LED"],
+          ["button", "button"],
+          ["buzzer", "buzzer"],
+          ["temperature sensor", "temperature sensor"],
+          ["light sensor", "light sensor"],
+          ["distance sensor", "distance sensor"],
+          ["motion sensor", "motion sensor"],
+          ["dial (potentiometer)", "potentiometer"],
+          ["servo motor", "servo"],
+        ],
+      },
+    ],
+    message1: "on pin %1",
+    args1: [{ type: "field_input", name: "PIN", text: "13" }],
+    previousStatement: BODY,
+    nextStatement: BODY,
+    style: STYLE("teal"),
+    tooltip:
+      "Something wired to your board. Copy the pin number printed next to it.",
+    helpUrl: "",
+  },
+  {
     type: BLOCK.show,
     message0: "🚀 Show it in my browser",
     previousStatement: BODY,
@@ -331,6 +362,7 @@ export const FIELD_LABELS: Record<string, Record<string, string>> = {
   [BLOCK.feature]: { WHAT: "What must it do?" },
   [BLOCK.whenThen]: { WHEN: "When this happens…", THEN: "…then do this" },
   [BLOCK.remembers]: { WHAT: "What should it remember?" },
+  [BLOCK.part]: { PART: "What is wired up?", PIN: "Which pin is it on?" },
   [BLOCK.proof]: { CHECK: "How will we know it works?" },
   [BLOCK.style]: {
     VISUAL: "How should it look?",
@@ -463,6 +495,17 @@ export const TRAY: TrayGroup[] = [
         label: "My rule…",
         hint: "Your helpers always follow it",
         colour: "purple",
+      },
+    ],
+  },
+  {
+    name: "Wired up",
+    bricks: [
+      {
+        type: BLOCK.part,
+        label: "It has a…",
+        hint: "A light, button or sensor on a pin. For board projects.",
+        colour: "teal",
       },
     ],
   },
