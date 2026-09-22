@@ -3,6 +3,12 @@
 import { FileCode } from "lucide-react"
 import { useState } from "react"
 
+import {
+  isBuilding,
+  stillAhead,
+  Working,
+  type Phase,
+} from "@/components/studio/Working"
 import { cn } from "@/lib/utils"
 
 export interface MirroredFile {
@@ -18,8 +24,27 @@ export interface MirroredFile {
  * when the sandbox has been reclaimed — and so a child can read the code that
  * built their game without anything having to be running.
  */
-export function CodeDrawer({ files }: { files: MirroredFile[] }) {
+export function CodeDrawer({
+  files,
+  phase,
+}: {
+  files: MirroredFile[]
+  phase: Phase
+}) {
   const [selected, setSelected] = useState<string | null>(null)
+
+  if (files.length === 0 && isBuilding(phase)) {
+    return (
+      <Working
+        phase={phase}
+        hint={
+          stillAhead(phase, "executing")
+            ? "Files appear here as soon as your helpers start writing them."
+            : undefined
+        }
+      />
+    )
+  }
 
   if (files.length === 0) {
     return (

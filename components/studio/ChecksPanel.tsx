@@ -1,12 +1,19 @@
 "use client"
 
 import type { Doc } from "@/convex/_generated/dataModel"
+import {
+  isBuilding,
+  stillAhead,
+  Working,
+  type Phase,
+} from "@/components/studio/Working"
 import { cn } from "@/lib/utils"
 
 interface ChecksPanelProps {
   events: Doc<"events">[]
   passed: number | null
   total: number | null
+  phase: Phase
 }
 
 /**
@@ -17,9 +24,27 @@ interface ChecksPanelProps {
  * happened — so a failure is shown plainly, next to Dr. Bug's explanation, rather
  * than softened.
  */
-export function ChecksPanel({ events, passed, total }: ChecksPanelProps) {
+export function ChecksPanel({
+  events,
+  passed,
+  total,
+  phase,
+}: ChecksPanelProps) {
   const results = events.filter((e) => e.kind === "test_result")
   const teaching = events.filter((e) => e.kind === "teaching")
+
+  if (results.length === 0 && isBuilding(phase)) {
+    return (
+      <Working
+        phase={phase}
+        hint={
+          stillAhead(phase, "testing")
+            ? "Your checks run once the code is written."
+            : undefined
+        }
+      />
+    )
+  }
 
   if (results.length === 0) {
     return (

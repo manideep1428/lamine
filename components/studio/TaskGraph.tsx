@@ -2,6 +2,7 @@
 
 import { useMemo } from "react"
 
+import { isBuilding, Working, type Phase } from "@/components/studio/Working"
 import { cn } from "@/lib/utils"
 
 export interface TaskRow {
@@ -41,8 +42,18 @@ const ROLE_LABEL: Record<string, string> = {
  * An ordered list of the same information is kept for screen readers — the graph
  * is the enhancement, not the only way to read it.
  */
-export function TaskGraph({ tasks }: { tasks: TaskRow[] }) {
+export function TaskGraph({
+  tasks,
+  phase,
+}: {
+  tasks: TaskRow[]
+  phase: Phase
+}) {
   const layout = useMemo(() => layoutTasks(tasks), [tasks])
+
+  if (tasks.length === 0 && isBuilding(phase)) {
+    return <Working phase={phase} />
+  }
 
   if (tasks.length === 0) {
     return (

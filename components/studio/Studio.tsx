@@ -397,13 +397,14 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
             ) : null}
           </div>
 
-          {view === "plan" ? <TaskGraph tasks={tasks} /> : null}
-          {view === "code" ? <CodeDrawer files={files} /> : null}
+          {view === "plan" ? <TaskGraph tasks={tasks} phase={state} /> : null}
+          {view === "code" ? <CodeDrawer files={files} phase={state} /> : null}
           {view === "checks" ? (
             <ChecksPanel
               events={events}
               passed={session?.testsPassed ?? null}
               total={session?.testsTotal ?? null}
+              phase={state}
             />
           ) : null}
           {view === "play" ? (

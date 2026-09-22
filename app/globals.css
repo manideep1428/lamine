@@ -234,9 +234,44 @@
   animation: snap-down 0.26s cubic-bezier(0.22, 1.4, 0.5, 1) both;
 }
 
+/* ── Working ───────────────────────────────────────────────────────────
+   Three bricks rising in sequence while the helpers build. This is motion that
+   answers a person's action — they pressed GO — rather than decoration, which is
+   why it is the only looping animation in the app. */
+
+@keyframes brick-wave {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-7px);
+    opacity: 1;
+  }
+}
+
+.brick-wave > span {
+  animation: brick-wave 1.15s ease-in-out infinite;
+}
+
+.brick-wave > span:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.brick-wave > span:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .snap-in {
     animation: none;
+  }
+  /* The loader still has to read as "something is happening", so the bricks stay
+     visible at full opacity rather than mid-fade. */
+  .brick-wave > span {
+    animation: none;
+    opacity: 1;
   }
   .brick,
   .step {
@@ -364,5 +399,7 @@
   filter: drop-shadow(0 0 10px rgba(18, 80, 216, 0.85)) brightness(1.15) !important;
   stroke: #ffffff !important;
   stroke-width: 2.5px !important;
-  transition: stroke 0.15s ease, filter 0.15s ease;
+  transition:
+    stroke 0.15s ease,
+    filter 0.15s ease;
 }
