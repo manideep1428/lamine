@@ -114,7 +114,9 @@ export function BlockCanvas({
       const workspace = workspaceRef.current
       const container = containerRef.current
       if (highlightedBlockRef.current) {
-        highlightedBlockRef.current.getSvgRoot()?.classList.remove("lamine-drop-target")
+        highlightedBlockRef.current
+          .getSvgRoot()
+          ?.classList.remove("lamine-drop-target")
         highlightedBlockRef.current = null
       }
       if (!workspace || !container) return { ok: false }
@@ -129,7 +131,9 @@ export function BlockCanvas({
       const container = containerRef.current
       if (!workspace || !container || !at) {
         if (highlightedBlockRef.current) {
-          highlightedBlockRef.current.getSvgRoot()?.classList.remove("lamine-drop-target")
+          highlightedBlockRef.current
+            .getSvgRoot()
+            ?.classList.remove("lamine-drop-target")
           highlightedBlockRef.current = null
         }
         return
@@ -137,7 +141,9 @@ export function BlockCanvas({
       const xy = toWorkspaceXY(workspace, container, at)
       const target = findBlockAt(workspace, xy) as Blockly.BlockSvg | null
       if (target !== highlightedBlockRef.current) {
-        highlightedBlockRef.current?.getSvgRoot()?.classList.remove("lamine-drop-target")
+        highlightedBlockRef.current
+          ?.getSvgRoot()
+          ?.classList.remove("lamine-drop-target")
         target?.getSvgRoot()?.classList.add("lamine-drop-target")
         highlightedBlockRef.current = target
       }
@@ -347,8 +353,11 @@ export function findBlockAt(
   if (blocks.length === 0) return null
 
   let bestInside: { block: Blockly.Block; area: number } | null = null
-  let bestNear: { block: Blockly.Block; distance: number; area: number } | null =
-    null
+  let bestNear: {
+    block: Blockly.Block
+    distance: number
+    area: number
+  } | null = null
 
   for (const block of blocks) {
     let rect: {
@@ -431,6 +440,18 @@ export function findBlockAt(
  *
  * A brick that cannot connect is parked at `dropAt` with a kid-facing message.
  * All operations happen within one Blockly event group so one add is one undo.
+ */
+/**
+ * Create a brick and connect it where it belongs.
+ *
+ * `dropAt` is where the child let go. When it lands on or near an existing brick,
+ * the new one is spliced in there — which is what the drop-target highlight during
+ * the drag has been promising. Without that, the highlight would point at one
+ * place and the brick would appear in another.
+ *
+ * Exported for `placement.test.ts`: this is the most intricate logic in the UI
+ * (it disconnects and reconnects live connections) and it is worth testing against
+ * real Blockly rather than by eye.
  */
 export function addBrick(
   workspace: Blockly.Workspace,
