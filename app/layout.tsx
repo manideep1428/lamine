@@ -30,6 +30,19 @@ export const metadata: Metadata = {
   title: "Lamine — build websites and games with blocks",
   description:
     "Snap blocks together to describe what you want, then watch your helpers build a real website or game you can play.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png", sizes: "64x64" },
+      { url: "/logo.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/logo.png",
+  },
+  openGraph: {
+    title: "Lamine",
+    description:
+      "Snap blocks together to describe what you want, then watch your helpers build a real website or game you can play.",
+    images: ["/logo.png"],
+  },
 }
 
 export const viewport: Viewport = {

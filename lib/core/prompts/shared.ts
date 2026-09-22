@@ -316,6 +316,19 @@ export function buildTaskPrompt(input: TaskPromptInput): string {
     )
   }
 
+  if (input.spec.lookups.length) {
+    parts.push(
+      `## The child asked you to look these up
+Use the look_up tool once for each, then write what you learned into the project in
+your own words, at a reading age of about ten. Credit where it came from.
+
+The finished project must NOT fetch anything at runtime: no fetch, no XMLHttpRequest,
+no API key, no network call of any kind. Everything you learn goes in as ordinary
+content while you build.
+` + input.spec.lookups.map((l) => `- ${sanitizePlaceholder(l)}`).join("\n")
+    )
+  }
+
   if (input.spec.parts.length) {
     parts.push(
       `## What is wired to the board\n` +

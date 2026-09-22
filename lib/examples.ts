@@ -53,6 +53,10 @@ function part(what: string, pin: string): BlockState {
   return b(BLOCK.part, { PART: what, PIN: pin })
 }
 
+function lookUp(what: string): BlockState {
+  return b(BLOCK.lookup, { WHAT: what })
+}
+
 function workspace(
   goalFields: Record<string, unknown>,
   body: BlockState[]
@@ -191,6 +195,35 @@ export const EXAMPLES: ExampleNugget[] = [
         feature("have a button that sends a message to my grown-up"),
         whenThen("someone clicks a card", "it gently grows"),
         b(BLOCK.style, { VISUAL: "clean", PERSONALITY: "friendly" }),
+        b(BLOCK.show),
+      ]
+    ),
+  },
+  {
+    id: "volcano-facts",
+    name: "Fact Page",
+    category: "web",
+    description:
+      "A page about something you want to know. Your helpers read about it on the web and write it up for you.",
+    workspace: workspace(
+      {
+        KIND: "website",
+        GOAL: "a page that teaches people about volcanoes",
+        FRAMEWORK: "canvas",
+      },
+      [
+        lookUp("how volcanoes erupt"),
+        lookUp("the biggest volcano eruptions ever"),
+        feature(
+          "show three facts I can read out loud, in my own words",
+          "there are three facts on the page"
+        ),
+        feature(
+          "say where each fact came from",
+          "every fact has a source next to it"
+        ),
+        whenThen("I click a fact", "then show me a bit more about it"),
+        b(BLOCK.style, { VISUAL: "clean", PERSONALITY: "curious" }),
         b(BLOCK.show),
       ]
     ),

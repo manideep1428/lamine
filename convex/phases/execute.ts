@@ -44,6 +44,7 @@ import { internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { internalAction, type ActionCtx } from "../_generated/server"
 import { MODEL, openai } from "../lib/openaiClient"
+import { firecrawlConfigured, lookUp } from "../lib/firecrawl"
 import { getSandbox, keepAlive, runTool } from "../lib/sandbox"
 import {
   describeError,
@@ -181,6 +182,11 @@ export const run = internalAction({
             },
           ]
 
+    /* ── web lookups ──
+       Offered only when the child asked for one and a key is configured, so the
+       model is never told about a tool that cannot work. */
+    const canLookUp = spec.lookups.length > 0 && firecrawlConfigured()
+
     /* ── the loop ── */
     let turns = task.turns
     let finished = false
@@ -206,7 +212,7 @@ export const run = internalAction({
           model: MODEL,
           instructions: system,
           input: input as OpenAI.Responses.ResponseInput,
-          tools: toolsFor(role) as OpenAI.Responses.Tool[],
+          tools: toolsFor(role, { canLookUp }) as OpenAI.Responses.Tool[],
           // We park the conversation on the task row ourselves, so there is no
           // reason to leave a copy on OpenAI's side.
           store: false,
@@ -279,7 +285,18 @@ export const run = internalAction({
           wrote?: { path: string; content: string }
         }
         try {
-          result = await runTool(sandbox, call.name, args, task.allowedPaths)
+          if (call.name === TOOL.lookUp) {
+            // Handled here rather than in the sandbox: the sandbox has no internet
+            // on purpose, and the API key must never reach it.
+            const found = await lookUp(String(args.query ?? ""))
+            result = {
+              output: found.text
+                ? `${found.text}\n\nSources: ${found.sources.join(", ")}`
+                : "Nothing useful came back. Write the project from what you already know, and do not invent facts.",
+            }
+          } else {
+            result = await runTool(sandbox, call.name, args, task.allowedPaths)
+          }
         } catch (error) {
           // A path or command refusal is information for the agent, not a crash:
           // it gets told why and can correct itself on the next turn.

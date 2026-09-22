@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useCallback, useMemo, useState } from "react"
 
 import { isConvexConfigured } from "@/components/convex-client-provider"
+import { Logo } from "@/components/studio/Logo"
 import { Studio } from "@/components/studio/Studio"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
@@ -64,31 +65,66 @@ const HERO: Record<Kind, { label: string; stack: HeroBrick[] }> = {
   game: {
     label: "a game",
     stack: [
-      { text: "Make a game", detail: "about dodging falling rocks", tone: "bg-brick-blue" },
+      {
+        text: "Make a game",
+        detail: "about dodging falling rocks",
+        tone: "bg-brick-blue",
+      },
       { text: "It must move with the arrow keys", tone: "bg-brick-green" },
-      { text: "Check that the ship moves", tone: "bg-brick-amber", nested: true },
-      { text: "When a rock hits me", detail: "then lose a life", tone: "bg-brick-green" },
+      {
+        text: "Check that the ship moves",
+        tone: "bg-brick-amber",
+        nested: true,
+      },
+      {
+        text: "When a rock hits me",
+        detail: "then lose a life",
+        tone: "bg-brick-green",
+      },
       { text: "Show it!", tone: "bg-brick-red" },
     ],
   },
   website: {
     label: "a website",
     stack: [
-      { text: "Make a website", detail: "about me and the things I make", tone: "bg-brick-blue" },
-      { text: "It must show a card for each thing I made", tone: "bg-brick-green" },
-      { text: "Check that there are three cards", tone: "bg-brick-amber", nested: true },
-      { text: "When someone taps a card", detail: "then it gently grows", tone: "bg-brick-green" },
+      {
+        text: "Make a website",
+        detail: "about me and the things I make",
+        tone: "bg-brick-blue",
+      },
+      {
+        text: "It must show a card for each thing I made",
+        tone: "bg-brick-green",
+      },
+      {
+        text: "Check that there are three cards",
+        tone: "bg-brick-amber",
+        nested: true,
+      },
+      {
+        text: "When someone taps a card",
+        detail: "then it gently grows",
+        tone: "bg-brick-green",
+      },
       { text: "Show it!", tone: "bg-brick-red" },
     ],
   },
   device: {
     label: "something with a board",
     stack: [
-      { text: "Make a thing with a board", detail: "that lights up when it gets dark", tone: "bg-brick-blue" },
+      {
+        text: "Make a thing with a board",
+        detail: "that lights up when it gets dark",
+        tone: "bg-brick-blue",
+      },
       { text: "It has a light on pin 13", tone: "bg-brick-teal" },
       { text: "It has a light sensor on pin 34", tone: "bg-brick-teal" },
       { text: "It must turn the light on in the dark", tone: "bg-brick-green" },
-      { text: "Check that the light comes on", tone: "bg-brick-amber", nested: true },
+      {
+        text: "Check that the light comes on",
+        tone: "bg-brick-amber",
+        nested: true,
+      },
       { text: "Show it!", tone: "bg-brick-red" },
     ],
   },
@@ -181,7 +217,13 @@ function Landing() {
 
         // Store the capability key before navigating: without it the studio cannot
         // open the project it just made.
-        saveLocalProject({ id: projectId, secret, name, kind: projectKind, workspace })
+        saveLocalProject({
+          id: projectId,
+          secret,
+          name,
+          kind: projectKind,
+          workspace,
+        })
         bump()
         router.push(`/?id=${projectId}`)
       } catch {
@@ -198,9 +240,10 @@ function Landing() {
       forgetLocalProject(id)
       bump()
       if (local && isConvexConfigured) {
-        await removeRemote({ projectId: id as Id<"projects">, secret: local.secret }).catch(
-          () => undefined
-        )
+        await removeRemote({
+          projectId: id as Id<"projects">,
+          secret: local.secret,
+        }).catch(() => undefined)
       }
     },
     [mine, removeRemote]
@@ -210,7 +253,12 @@ function Landing() {
     <main className="min-h-svh">
       <div className="mx-auto max-w-5xl px-6 py-10 sm:py-16">
         <header className="mb-12 flex items-baseline justify-between gap-4">
-          <p className="font-display text-2xl font-bold tracking-tight text-ink">lamine</p>
+          <div className="flex items-center gap-2">
+            <Logo className="size-10" priority />
+            <p className="font-display text-2xl font-bold tracking-tight text-ink">
+              lamine
+            </p>
+          </div>
           <Link
             href="#grown-ups"
             className="text-sm text-slate underline-offset-4 hover:text-ink hover:underline"
@@ -223,9 +271,9 @@ function Landing() {
           Snap bricks together. Get the real thing.
         </h1>
         <p className="mt-5 max-w-[56ch] text-[17px] leading-relaxed text-slate">
-          You say what you want and how you&apos;ll know it works. Your three helpers write the
-          actual code, run your checks, and hand it back working. No typing code, no installing
-          anything, no sign-up.
+          You say what you want and how you&apos;ll know it works. Your three
+          helpers write the actual code, run your checks, and hand it back
+          working. No typing code, no installing anything, no sign-up.
         </p>
 
         <div className="mt-10 grid gap-10 sm:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] sm:gap-14">
@@ -297,7 +345,9 @@ function Landing() {
             </button>
 
             <div className="mt-10">
-              <p className="mb-3 text-sm text-slate">Or open one that already works:</p>
+              <p className="mb-3 text-sm text-slate">
+                Or open one that already works:
+              </p>
               <ul className="space-y-2">
                 {EXAMPLES.map((example) => (
                   <li key={example.id}>
@@ -334,17 +384,24 @@ function Landing() {
 
         {projects.length > 0 ? (
           <section className="mt-20" aria-label="Your projects">
-            <h2 className="mb-4 font-display text-xl font-bold text-ink">Your projects</h2>
+            <h2 className="mb-4 font-display text-xl font-bold text-ink">
+              Your projects
+            </h2>
             <ul className="divide-y divide-line border-y border-line">
               {projects.map((project) => (
-                <li key={project.id} className="group flex items-center gap-3 py-1">
+                <li
+                  key={project.id}
+                  className="group flex items-center gap-3 py-1"
+                >
                   <Link
                     href={`/?id=${project.id}`}
                     className="min-w-0 flex-1 py-2.5 text-[15px] font-medium text-ink hover:text-brick-blue"
                   >
                     <span className="truncate">{project.name}</span>
                     <span className="ml-3 text-[13px] font-normal text-slate">
-                      {project.here ? edited(project.updatedAt) : "on another device"}
+                      {project.here
+                        ? edited(project.updatedAt)
+                        : "on another device"}
                     </span>
                   </Link>
                   <button
@@ -362,22 +419,25 @@ function Landing() {
         ) : null}
 
         <section id="grown-ups" className="mt-20 max-w-[62ch] scroll-mt-8">
-          <h2 className="mb-3 font-display text-xl font-bold text-ink">For grown-ups</h2>
+          <h2 className="mb-3 font-display text-xl font-bold text-ink">
+            For grown-ups
+          </h2>
           <div className="space-y-3 text-[15px] leading-relaxed text-slate">
             <p>
-              Projects are saved in this browser and are private until you publish one. Clearing
-              browser data loses access to them, so use a project&apos;s share link if you want it
-              on another device.
+              Projects are saved in this browser and are private until you
+              publish one. Clearing browser data loses access to them, so use a
+              project&apos;s share link if you want it on another device.
             </p>
             <p>
-              Whatever a child types in a brick is sent to an AI model as a description of what to
-              build, so it should not include a full name, a school or an address. Code runs in a
-              throwaway Linux sandbox with no internet access, not on this computer.
+              Whatever a child types in a brick is sent to an AI model as a
+              description of what to build, so it should not include a full
+              name, a school or an address. Code runs in a throwaway Linux
+              sandbox with no internet access, not on this computer.
             </p>
             <p>
-              A board project produces a sketch to upload yourself. Nothing is flashed to hardware
-              from here, and the checks on a board project confirm the code&apos;s shape rather than
-              watching it run.
+              A board project produces a sketch to upload yourself. Nothing is
+              flashed to hardware from here, and the checks on a board project
+              confirm the code&apos;s shape rather than watching it run.
             </p>
           </div>
         </section>
@@ -397,7 +457,12 @@ function Splash() {
   return (
     <div className="min-h-svh bg-paper">
       <div className="mx-auto max-w-5xl px-6 py-10 sm:py-16">
-        <p className="font-display text-2xl font-bold tracking-tight text-ink">lamine</p>
+        <div className="flex items-center gap-2">
+          <Logo className="size-10" priority />
+          <p className="font-display text-2xl font-bold tracking-tight text-ink">
+            lamine
+          </p>
+        </div>
         <p className="mt-12 max-w-[30ch] font-display text-4xl leading-[1.08] font-bold text-ink sm:text-[3.25rem]">
           Snap bricks together. Get the real thing.
         </p>

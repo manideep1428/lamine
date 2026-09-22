@@ -38,6 +38,7 @@ export const BRICK = {
   teal: { fill: "#0c7e8b", edge: "#095b64", ink: "#ffffff" },
   blue: { fill: "#1250d8", edge: "#0c3a9e", ink: "#ffffff" },
   purple: { fill: "#6b34c9", edge: "#4d2493", ink: "#ffffff" },
+  orange: { fill: "#a2470b", edge: "#733207", ink: "#ffffff" },
 } as const
 
 export type BrickColour = keyof typeof BRICK
@@ -51,6 +52,7 @@ export const BLOCK_COLOUR: Record<string, BrickColour> = {
   [BLOCK.remembers]: "green",
   [BLOCK.proof]: "amber",
   [BLOCK.part]: "teal",
+  [BLOCK.lookup]: "orange",
   [BLOCK.style]: "purple",
   [BLOCK.rule]: "purple",
   [BLOCK.show]: "red",
@@ -248,6 +250,17 @@ const BLOCK_JSON: object[] = [
     helpUrl: "",
   },
   {
+    type: BLOCK.lookup,
+    message0: "🌐 Look up %1",
+    args0: [{ type: "field_input", name: "WHAT", text: "how volcanoes erupt" }],
+    previousStatement: BODY,
+    nextStatement: BODY,
+    style: STYLE("orange"),
+    tooltip:
+      "Your helpers read about this on the web while they build, and put what they find into your project.",
+    helpUrl: "",
+  },
+  {
     type: BLOCK.show,
     message0: "🚀 Show it in my browser",
     previousStatement: BODY,
@@ -363,6 +376,7 @@ export const FIELD_LABELS: Record<string, Record<string, string>> = {
   [BLOCK.whenThen]: { WHEN: "When this happens…", THEN: "…then do this" },
   [BLOCK.remembers]: { WHAT: "What should it remember?" },
   [BLOCK.part]: { PART: "What is wired up?", PIN: "Which pin is it on?" },
+  [BLOCK.lookup]: { WHAT: "What should they read about?" },
   [BLOCK.proof]: { CHECK: "How will we know it works?" },
   [BLOCK.style]: {
     VISUAL: "How should it look?",
@@ -385,6 +399,7 @@ export const LONG_FIELDS: Record<string, readonly string[]> = {
   [BLOCK.whenThen]: ["WHEN", "THEN"],
   [BLOCK.remembers]: ["WHAT"],
   [BLOCK.proof]: ["CHECK"],
+  [BLOCK.lookup]: ["WHAT"],
   [BLOCK.rule]: ["PROMPT"],
 }
 
@@ -506,6 +521,17 @@ export const TRAY: TrayGroup[] = [
         label: "It has a…",
         hint: "A light, button or sensor on a pin. For board projects.",
         colour: "teal",
+      },
+    ],
+  },
+  {
+    name: "From the web",
+    bricks: [
+      {
+        type: BLOCK.lookup,
+        label: "Look up…",
+        hint: "Your helpers read about it while building and use what they find.",
+        colour: "orange",
       },
     ],
   },

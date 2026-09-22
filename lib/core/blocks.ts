@@ -31,6 +31,7 @@ export const BLOCK = {
   style: "lamine_style",
   rule: "lamine_rule",
   part: "lamine_part",
+  lookup: "lamine_lookup",
   show: "lamine_show",
 } as const
 
@@ -45,6 +46,7 @@ export const BODY_BLOCKS: readonly string[] = [
   BLOCK.style,
   BLOCK.rule,
   BLOCK.part,
+  BLOCK.lookup,
   BLOCK.show,
 ]
 
@@ -211,6 +213,7 @@ export function interpretWorkspace(
     behavioralTests: [],
     data: [],
     parts: [],
+    lookups: [],
     skills: [],
   }
 
@@ -283,6 +286,12 @@ export function interpretWorkspace(
       case BLOCK.part: {
         const part = str(block.fields?.PART)
         if (part) draft.parts?.push({ part, pin: str(block.fields?.PIN) })
+        break
+      }
+
+      case BLOCK.lookup: {
+        const what = str(block.fields?.WHAT)
+        if (what) draft.lookups?.push(what)
         break
       }
 

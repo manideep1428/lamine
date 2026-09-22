@@ -11,6 +11,7 @@
 import type * as crew from "../crew.js";
 import type * as http from "../http.js";
 import type * as lib_crewCore from "../lib/crewCore.js";
+import type * as lib_firecrawl from "../lib/firecrawl.js";
 import type * as lib_openaiClient from "../lib/openaiClient.js";
 import type * as lib_phaseUtils from "../lib/phaseUtils.js";
 import type * as lib_sandbox from "../lib/sandbox.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   crew: typeof crew;
   http: typeof http;
   "lib/crewCore": typeof lib_crewCore;
+  "lib/firecrawl": typeof lib_firecrawl;
   "lib/openaiClient": typeof lib_openaiClient;
   "lib/phaseUtils": typeof lib_phaseUtils;
   "lib/sandbox": typeof lib_sandbox;

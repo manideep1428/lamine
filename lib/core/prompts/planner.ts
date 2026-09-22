@@ -82,6 +82,18 @@ ${asKidInput(spec.nugget.goal, "kid_goal")}`,
     )
   }
 
+  if (spec.lookups.length) {
+    parts.push(
+      `## They asked their helpers to look these up on the web
+` +
+        spec.lookups.map((l) => `- ${sanitizePlaceholder(l)}`).join("\n") +
+        `
+Give the task that writes the content a note to use the look_up tool. What comes
+back is written into the project as ordinary content; the finished project never
+fetches anything itself.`
+    )
+  }
+
   if (spec.parts.length) {
     parts.push(
       `## What is wired to the board\n` +

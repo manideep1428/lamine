@@ -34,3 +34,10 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agent tooling, not part of the app
+.agents/
+.claude/
+.kiro/
+skills-lock.json
+.commitmsg

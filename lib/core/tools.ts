@@ -18,6 +18,7 @@ export const TOOL = {
   read: "read_file",
   list: "list_files",
   run: "run",
+  lookUp: "look_up",
   done: "done",
 } as const
 
@@ -176,19 +177,46 @@ const DONE: FunctionToolDef = {
   },
 }
 
+const LOOK_UP: FunctionToolDef = {
+  type: "function",
+  name: TOOL.lookUp,
+  description:
+    "Read about something on the web and get plain text back. Use it only for what the child asked to look up, then write what you learned into the project in your own words. The finished project must not fetch anything itself.",
+  strict: true,
+  parameters: {
+    type: "object",
+    additionalProperties: false,
+    required: ["query"],
+    properties: {
+      query: {
+        type: "string",
+        description: "What to read about, in a few words.",
+      },
+    },
+  },
+}
+
 /**
  * Which tools a role gets.
  *
  * The reviewer has no `write_file` — that is the difference between a reviewer
  * and a second builder. It reports problems; the team fixes them.
  */
-export function toolsFor(role: AgentRole | string): FunctionToolDef[] {
+export function toolsFor(
+  role: AgentRole | string,
+  /** Only offered when the child asked for a lookup and the key is configured. */
+  options: { canLookUp?: boolean } = {}
+): FunctionToolDef[] {
+  const web = options.canLookUp ? [LOOK_UP] : []
   if (role === "reviewer") return [READ_FILE, LIST_FILES, RUN, DONE]
-  return [WRITE_FILE, READ_FILE, LIST_FILES, RUN, DONE]
+  return [WRITE_FILE, READ_FILE, LIST_FILES, RUN, ...web, DONE]
 }
 
-export function toolNamesFor(role: AgentRole | string): ToolName[] {
-  return toolsFor(role).map((t) => t.name)
+export function toolNamesFor(
+  role: AgentRole | string,
+  options: { canLookUp?: boolean } = {}
+): ToolName[] {
+  return toolsFor(role, options).map((t) => t.name)
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -261,6 +289,8 @@ export function describeToolCall(
       return `Looking in ${typeof args.dir === "string" && args.dir ? args.dir : "the project folder"}`
     case TOOL.run:
       return `Running ${typeof args.cmd === "string" ? args.cmd.slice(0, 120) : "a command"}`
+    case TOOL.lookUp:
+      return `Reading about ${typeof args.query === "string" ? args.query.slice(0, 80) : "it"}`
     case TOOL.done:
       return `Finished: ${typeof args.verdict === "string" ? args.verdict : "done"}`
     default:

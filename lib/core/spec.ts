@@ -23,11 +23,13 @@ export const CAPS = {
   styleValue: 60,
   partName: 40,
   pin: 12,
+  lookup: 200,
   requirements: 30,
   behaviors: 30,
   data: 10,
   skills: 10,
   parts: 10,
+  lookups: 5,
 } as const
 
 export const PROJECT_KINDS = ["game", "website", "device"] as const
@@ -97,6 +99,17 @@ export const NuggetSpecSchema = z.strictObject({
    * project saved before devices existed still validates.
    */
   parts: z.array(PartSchema).max(CAPS.parts).default([]),
+  /**
+   * Things the child asked their helpers to look up on the web while building.
+   *
+   * Resolved at build time and written into the project as ordinary content, so
+   * the finished thing needs no network and carries no API key. Defaults to empty
+   * so a project saved before lookups existed still validates.
+   */
+  lookups: z
+    .array(z.string().min(1).max(CAPS.lookup))
+    .max(CAPS.lookups)
+    .default([]),
   skills: z.array(SkillSchema).max(CAPS.skills),
   deploy: z.strictObject({ target: z.literal("web") }),
 })
@@ -123,6 +136,7 @@ export interface SpecDraft {
   data: string[]
   /** Optional so every existing caller keeps compiling; a device project sets it. */
   parts?: Part[]
+  lookups?: string[]
   skills: { name: string; prompt: string }[]
 }
 
@@ -269,6 +283,13 @@ export function finalizeSpec(draft: SpecDraft): {
       part: clampText(p.part, CAPS.partName, "part", warnings),
       pin: clampText(p.pin, CAPS.pin, "part.pin", warnings),
     })),
+    lookups: clampList(
+      draft.lookups ?? [],
+      CAPS.lookups,
+      "lookups",
+      "things to look up",
+      warnings
+    ).map((l) => clampText(l, CAPS.lookup, "lookup", warnings)),
     skills: clampList(
       draft.skills,
       CAPS.skills,
