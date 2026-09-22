@@ -2,7 +2,7 @@
 #
 # Everything a child's project can need is baked in here, because the alternative
 # is paying for `npm install` on every single build — and because the sandboxes
-# run with outbound internet switched off (PLAN.md §9), so an agent could not
+# run with outbound internet switched off (ARCHITECTURE.md §9), so an agent could not
 # download a library even if it tried.
 #
 # Build it with:  bun run sandbox:template

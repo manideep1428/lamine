@@ -1,9 +1,8 @@
 /**
  * The MetaPlanner prompt: NuggetSpec → a task DAG.
  *
- * elisa asks the model politely for JSON and then repairs the result. We use
- * OpenAI Structured Outputs instead, so the shape is guaranteed at decode time
- * and the repair code is unnecessary. `validatePlan` in `lib/core/plan.ts`
+ * OpenAI Structured Outputs guarantees the shape at decode time, so nothing here
+ * asks politely for JSON or repairs the answer. `validatePlan` in `lib/core/plan.ts`
  * still checks the *meaning*.
  */
 
@@ -125,8 +124,8 @@ export const BUDDIES = {
 export type BuddyId = keyof typeof BUDDIES
 
 /**
- * One call, three voices. elisa runs separate narrator/teaching services; a
- * single structured call is a third of the cost and a child cannot tell.
+ * One call, three voices. Separate narrator and teaching services would cost
+ * three times as much, and a child cannot tell the difference.
  */
 export function crewSystem(spec: NuggetSpec): string {
   return [

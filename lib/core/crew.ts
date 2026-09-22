@@ -1,7 +1,7 @@
 /**
  * The buddies' reply shape.
  *
- * One LLM call returns all three voices (PLAN.md §11) — three agents with an
+ * One LLM call returns all three voices — three agents with an
  * orchestrator would cost three times as much and a child could not tell the
  * difference. Structured Outputs constrains the shape at decode time; this is
  * the schema it is constrained to.

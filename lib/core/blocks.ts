@@ -2,8 +2,8 @@
  * Blocks → NuggetSpec.
  *
  * This is the piece that turns what a kid connected on the canvas into the
- * contract the build agents read. elisa walks live Blockly block objects; we
- * walk Blockly's *serialized JSON* instead, which makes this module pure —
+ * contract the build agents read. It walks Blockly's *serialized JSON* rather
+ * than live block objects, which makes this module pure —
  * no DOM, no Blockly runtime, fully unit-testable in Node.
  *
  * The shapes below intentionally mirror `blockly/core/serialization/blocks`

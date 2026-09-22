@@ -3,7 +3,7 @@
 /**
  * Phase 2 — execute. The agent loop.
  *
- * elisa spawned the Claude Code CLI per agent. We keep the loop here and give
+ * The loop lives here, in Convex, rather than in a CLI spawned per agent. We give
  * the agent E2B as its tool surface, which buys three things: the API key never
  * leaves Convex, every tool call lands in the `events` table (so the narrator
  * feed is real work rather than canned lines), and the MetaPlanner's DAG decides

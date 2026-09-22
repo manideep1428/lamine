@@ -3,7 +3,7 @@
  *
  * Each one is a serialized Blockly workspace, so choosing an example drops a
  * real, connected block stack onto the canvas that the kid can immediately
- * edit — the same idea as elisa's `frontend/src/lib/examples`.
+ * edit.
  */
 
 import { BLOCK, type BlockState, type WorkspaceState } from "./core/blocks"

@@ -27,7 +27,7 @@ export function NuggetPicker({ onPick, onClose, busy }: NuggetPickerProps) {
       onClick={onClose}
     >
       <div
-        className="plate animate-snap-in w-full max-w-2xl p-5"
+        className="panel snap-in w-full max-w-2xl p-5"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-4">
@@ -35,14 +35,14 @@ export function NuggetPicker({ onPick, onClose, busy }: NuggetPickerProps) {
             <h2 className="font-display text-xl font-bold text-ink">
               What are we making?
             </h2>
-            <p className="text-[13px] text-ink-faint">
+            <p className="text-[13px] text-slate">
               Pick a set to start from, then change anything you like.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border-2 border-plate-edge p-1.5 text-ink-soft hover:bg-plate-hover"
+            className="rounded-lg border-2 border-line p-1.5 text-slate hover:bg-paper-sunken"
           >
             <X className="size-4" />
             <span className="sr-only">Close</span>
@@ -56,7 +56,7 @@ export function NuggetPicker({ onPick, onClose, busy }: NuggetPickerProps) {
                 type="button"
                 disabled={busy}
                 onClick={() => onPick(example)}
-                className="brick brick-studs h-full w-full bg-brick-blue px-4 pt-5 pb-3 text-left disabled:opacity-50"
+                className="brick h-full w-full bg-brick-blue px-4 py-3.5 text-left disabled:opacity-50"
               >
                 <span className="flex items-center gap-2 font-display text-[15px] font-bold">
                   <span aria-hidden>
@@ -76,7 +76,7 @@ export function NuggetPicker({ onPick, onClose, busy }: NuggetPickerProps) {
           type="button"
           disabled={busy}
           onClick={() => onPick(null)}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-plate-edge px-4 py-3 text-[13px] font-semibold text-ink-soft hover:bg-plate-hover hover:text-ink disabled:opacity-50"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line px-4 py-3 text-[13px] font-semibold text-slate hover:bg-paper-sunken hover:text-ink disabled:opacity-50"
         >
           <Sparkles className="size-4" />
           Start from nothing — just a Goal brick

@@ -3,7 +3,7 @@
 /**
  * E2B sandbox helpers.
  *
- * Four rules encoded here, all from PLAN.md §9:
+ * Four rules encoded here, all from ARCHITECTURE.md §9:
  *
  *  1. `lifecycle.onTimeout: 'pause'`. The E2B default is kill, which would
  *     destroy a child's project after five idle minutes. Pausing keeps the

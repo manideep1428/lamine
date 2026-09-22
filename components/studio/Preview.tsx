@@ -65,7 +65,7 @@ export function Preview({
   if (!url) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-        <p className="text-sm text-ink-soft">
+        <p className="text-sm text-slate">
           {building
             ? "Your helpers are building it. This is where you'll play it."
             : "Nothing to show yet. Press GO and I'll build it."}
@@ -79,16 +79,14 @@ export function Preview({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b-2 border-plate-edge px-3 py-1.5">
-        <span className="truncate font-mono text-[11px] text-ink-faint">
-          {url}
-        </span>
+      <div className="flex items-center gap-2 border-b-2 border-line px-3 py-1.5">
+        <span className="truncate font-mono text-[11px] text-slate">{url}</span>
         <div className="flex-1" />
         <button
           type="button"
           onClick={() => setNonce((n) => n + 1)}
           title="Reload"
-          className="rounded-lg border-2 border-plate-edge p-1.5 text-ink-soft hover:bg-plate-hover hover:text-ink"
+          className="rounded-lg border-2 border-line p-1.5 text-slate hover:bg-paper-sunken hover:text-ink"
         >
           <RefreshCw className="size-3.5" />
           <span className="sr-only">Reload</span>
@@ -98,7 +96,7 @@ export function Preview({
           onClick={onWake}
           disabled={waking}
           title="Wake it up if it went to sleep"
-          className="rounded-lg border-2 border-plate-edge px-2 py-1 text-xs text-ink-soft hover:bg-plate-hover hover:text-ink disabled:opacity-50"
+          className="rounded-lg border-2 border-line px-2 py-1 text-xs text-slate hover:bg-paper-sunken hover:text-ink disabled:opacity-50"
         >
           {waking ? "waking…" : "wake"}
         </button>
@@ -107,7 +105,7 @@ export function Preview({
           target="_blank"
           rel="noreferrer noopener"
           title="Open in a new tab"
-          className="rounded-lg border-2 border-plate-edge p-1.5 text-ink-soft hover:bg-plate-hover hover:text-ink"
+          className="rounded-lg border-2 border-line p-1.5 text-slate hover:bg-paper-sunken hover:text-ink"
         >
           <ExternalLink className="size-3.5" />
           <span className="sr-only">Open in a new tab</span>
@@ -116,7 +114,7 @@ export function Preview({
 
       <div className="relative flex-1 bg-white">
         {!loaded ? (
-          <div className="absolute inset-0 flex items-center justify-center gap-2 text-sm text-ink-faint">
+          <div className="absolute inset-0 flex items-center justify-center gap-2 text-sm text-slate">
             <Loader2 className="size-4 animate-spin" />
             Waking your project up…
           </div>

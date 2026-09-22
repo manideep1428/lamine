@@ -4,7 +4,7 @@
  * E2B is metered compute, so a finished project never lives there. On publish we
  * read the files out, keep the ones that belong on a website, and store them in
  * Convex file storage served from `.convex.site` — a different origin from the
- * app, which is the point (PLAN.md §10).
+ * app, which is the point (ARCHITECTURE.md §8).
  *
  * Pure module: decisions about paths and types, no IO.
  */

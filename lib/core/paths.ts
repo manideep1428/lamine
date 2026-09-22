@@ -1,8 +1,8 @@
 /**
  * Path guard for agent file operations.
  *
- * elisa enforces `allowed_paths` partly in the prompt. Prompts are advice; this
- * module is the boundary. Every agent tool call goes through `resolveWritePath`
+ * Prompts are advice; this module is the boundary. Telling an agent about
+ * `allowedPaths` is not the same as enforcing them. Every agent tool call goes through `resolveWritePath`
  * or `resolveReadPath` before it touches the sandbox filesystem.
  *
  * Pure module — no filesystem, no sandbox. Just string decisions.

@@ -48,10 +48,10 @@ export function TopBar({
   canEdit,
 }: TopBarProps) {
   return (
-    <header className="plate-flat z-20 flex h-16 shrink-0 items-center gap-3 border-x-0 border-t-0 px-3">
+    <header className="z-20 flex h-16 shrink-0 items-center gap-3 border-b border-line bg-surface px-3">
       <Link
         href="/"
-        className="brick brick-studs bg-brick-red px-3 pt-3.5 pb-1.5"
+        className="brick bg-brick-red px-3 py-2"
         title="My projects"
       >
         <span className="font-display text-base leading-none font-bold tracking-tight">
@@ -76,14 +76,14 @@ export function TopBar({
         onKeyDown={(event) => {
           if (event.key === "Enter") event.currentTarget.blur()
         }}
-        className="w-48 rounded-lg border-2 border-transparent bg-transparent px-2 py-1 font-display text-sm font-semibold text-ink outline-none hover:border-plate-edge focus:border-brick-blue focus:bg-plate-raised"
+        className="w-48 rounded-lg border-2 border-transparent bg-transparent px-2 py-1 font-display text-sm font-semibold text-ink outline-none hover:border-line focus:border-brick-blue focus:bg-surface"
         maxLength={80}
       />
 
       <span
         className={cn(
           "text-[11px] transition-opacity",
-          saving ? "text-ink-faint opacity-100" : "opacity-0"
+          saving ? "text-slate opacity-100" : "opacity-0"
         )}
         aria-live="polite"
       >
@@ -153,7 +153,7 @@ function IconButton({
         "rounded-lg border-2 p-1.5 transition-colors",
         pressed
           ? "border-brick-blue bg-brick-blue text-white"
-          : "border-plate-edge text-ink-soft hover:bg-plate-hover hover:text-ink"
+          : "border-line text-slate hover:bg-paper-sunken hover:text-ink"
       )}
     >
       {children}

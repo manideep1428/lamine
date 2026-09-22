@@ -27,7 +27,7 @@ export function Instructions({ spec, warnings, problems }: InstructionsProps) {
   return (
     <section
       className={cn(
-        "plate pointer-events-auto absolute bottom-4 left-4 z-10 max-w-md overflow-hidden",
+        "panel pointer-events-auto absolute bottom-4 left-4 z-10 max-w-md overflow-hidden",
         open ? "w-[26rem]" : "w-auto"
       )}
       aria-label="What you're building"
@@ -39,28 +39,28 @@ export function Instructions({ spec, warnings, problems }: InstructionsProps) {
       >
         <ChevronRight
           className={cn(
-            "size-3.5 shrink-0 text-ink-faint transition-transform",
+            "size-3.5 shrink-0 text-slate transition-transform",
             open && "rotate-90"
           )}
         />
-        <span className="font-display text-[12px] font-bold tracking-wide text-ink uppercase">
+        <span className="font-display text-[13px] font-bold text-ink">
           What you&apos;re building
         </span>
         {!open && problems.length > 0 ? (
-          <span className="ml-1 rounded bg-accent-sun px-1.5 text-[10px] font-bold text-ink">
+          <span className="ml-1 rounded bg-brick-amber px-1.5 text-[10px] font-bold text-ink">
             {problems.length}
           </span>
         ) : null}
       </button>
 
       {open ? (
-        <div className="space-y-2 border-t-2 border-plate-edge px-3 py-2 text-[13px]">
+        <div className="space-y-2 border-t-2 border-line px-3 py-2 text-[13px]">
           {problems.length > 0 ? (
             <ul className="space-y-1">
               {problems.map((problem) => (
                 <li
                   key={problem}
-                  className="flex items-start gap-1.5 text-ink-soft"
+                  className="flex items-start gap-1.5 text-slate"
                 >
                   <span aria-hidden className="font-bold text-brick-amber">
                     →
@@ -97,19 +97,19 @@ export function Instructions({ spec, warnings, problems }: InstructionsProps) {
               <button
                 type="button"
                 onClick={() => setShowJson((was) => !was)}
-                className="text-[11px] text-ink-faint underline-offset-2 hover:underline"
+                className="text-[11px] text-slate underline-offset-2 hover:underline"
               >
                 {showJson ? "hide" : "show"} what the helpers actually read
               </button>
 
               {showJson ? (
-                <pre className="terminal-panel max-h-40 overflow-auto rounded-lg p-2.5 font-mono text-[10px] leading-relaxed">
+                <pre className="code-panel max-h-40 overflow-auto rounded-lg p-2.5 font-mono text-[10px] leading-relaxed">
                   <code>{JSON.stringify(spec, null, 2)}</code>
                 </pre>
               ) : null}
             </>
           ) : (
-            <p className="text-ink-faint">
+            <p className="text-slate">
               Start with a <strong>Make a…</strong> brick. Everything else snaps
               underneath it.
             </p>
@@ -125,7 +125,7 @@ function Count({ label, value }: { label: string; value: number }) {
     <div
       className={cn(
         "rounded-lg px-2 py-1",
-        value === 0 ? "bg-plate text-ink-faint" : "bg-brick-green/12 text-ink"
+        value === 0 ? "bg-paper text-slate" : "bg-brick-green/12 text-ink"
       )}
     >
       <dt className="text-[10px] leading-tight">{label}</dt>

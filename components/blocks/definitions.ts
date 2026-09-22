@@ -3,7 +3,8 @@
  *
  * Colours are named brick colours in the theme rather than Blockly hues, so the
  * canvas and the surrounding UI can't drift apart — both read the same seven
- * values. (elisa used hue numbers; lamine has its own palette.)
+ * values. Named colours rather than Blockly hue numbers, so a designer can read
+ * them and the canvas cannot drift from the chrome.
  *
  * The important structural lines are `check: "lamine_proof"` on the PROOFS input
  * and the two connection types below: the main stack is `lamine_body` and proofs
@@ -31,12 +32,12 @@ const PROOF = BLOCK.proof
 
 /** Must match the brick tokens in app/globals.css. */
 export const BRICK = {
-  red: { fill: "#b81217", edge: "#7d0a0e", ink: "#ffffff" },
-  amber: { fill: "#8f5f02", edge: "#634101", ink: "#ffffff" },
-  green: { fill: "#147a34", edge: "#0d5222", ink: "#ffffff" },
-  teal: { fill: "#0b6e78", edge: "#074a52", ink: "#ffffff" },
-  blue: { fill: "#0b52bd", edge: "#073a86", ink: "#ffffff" },
-  purple: { fill: "#6a2fb0", edge: "#4a1f7d", ink: "#ffffff" },
+  red: { fill: "#c21f2b", edge: "#8e1620", ink: "#ffffff" },
+  amber: { fill: "#9a6000", edge: "#6e4400", ink: "#ffffff" },
+  green: { fill: "#0f7a41", edge: "#0a5a2f", ink: "#ffffff" },
+  teal: { fill: "#0c7e8b", edge: "#095b64", ink: "#ffffff" },
+  blue: { fill: "#1250d8", edge: "#0c3a9e", ink: "#ffffff" },
+  purple: { fill: "#6b34c9", edge: "#4d2493", ink: "#ffffff" },
 } as const
 
 export type BrickColour = keyof typeof BRICK
@@ -273,7 +274,7 @@ const THEME_CONFIG = {
   base: Blockly.Themes.Classic,
   blockStyles,
   componentStyles: {
-    // The studio draws the studded baseplate behind the canvas, so Blockly's own
+    // The studio draws the studded plate-grid behind the canvas, so Blockly's own
     // background stays out of the way.
     workspaceBackgroundColour: "transparent",
     scrollbarColour: "#c3cddc",
@@ -308,6 +309,69 @@ function defineLamineTheme(): Blockly.Theme {
 }
 
 export const lamineTheme = defineLamineTheme()
+
+/* ════════════════════════════════════════════════════════════════════════
+   Field labels
+   ════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * What each field is called in the editor panel, in the child's words.
+ *
+ * The brick itself shows a shortened value so it stays brick-shaped; the panel is
+ * where the whole thing is read and written. Without these, the panel would have
+ * to show raw field names like `WHAT` and `THEN`.
+ */
+export const FIELD_LABELS: Record<string, Record<string, string>> = {
+  [BLOCK.goal]: {
+    KIND: "Is it a game or a website?",
+    GOAL: "What is it about?",
+    FRAMEWORK: "How should it be drawn?",
+  },
+  [BLOCK.like]: { EXAMPLE: "Which one is it like?" },
+  [BLOCK.feature]: { WHAT: "What must it do?" },
+  [BLOCK.whenThen]: { WHEN: "When this happens…", THEN: "…then do this" },
+  [BLOCK.remembers]: { WHAT: "What should it remember?" },
+  [BLOCK.proof]: { CHECK: "How will we know it works?" },
+  [BLOCK.style]: {
+    VISUAL: "How should it look?",
+    PERSONALITY: "How should it feel?",
+  },
+  [BLOCK.rule]: {
+    NAME: "Name your rule",
+    PROMPT: "What should your helpers always do?",
+  },
+}
+
+/**
+ * Fields a child writes sentences into. These get a real textarea in the editor
+ * panel rather than a single-line box — a Proof like "the ship stops at the edge
+ * of the screen and the score stays the same" does not belong in an input.
+ */
+export const LONG_FIELDS: Record<string, readonly string[]> = {
+  [BLOCK.goal]: ["GOAL"],
+  [BLOCK.feature]: ["WHAT"],
+  [BLOCK.whenThen]: ["WHEN", "THEN"],
+  [BLOCK.remembers]: ["WHAT"],
+  [BLOCK.proof]: ["CHECK"],
+  [BLOCK.rule]: ["PROMPT"],
+}
+
+export function fieldLabel(blockType: string, fieldName: string): string {
+  return FIELD_LABELS[blockType]?.[fieldName] ?? fieldName.toLowerCase()
+}
+
+export function isLongField(blockType: string, fieldName: string): boolean {
+  return (LONG_FIELDS[blockType] ?? []).includes(fieldName)
+}
+
+/** The human name of a brick, for the editor panel's heading. */
+export function brickLabel(blockType: string): string {
+  for (const group of TRAY) {
+    const found = group.bricks.find((b) => b.type === blockType)
+    if (found) return found.label
+  }
+  return "Brick"
+}
 
 /* ════════════════════════════════════════════════════════════════════════
    The tray

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 
 export type StudioView = "bricks" | "plan" | "code" | "checks" | "play"
 
-/** What a plate looks like right now. */
+/** What a step looks like right now. */
 type PlateState = "idle" | "active" | "done" | "failed"
 
 interface BuildRailProps {
@@ -118,7 +118,7 @@ export function BuildRail({
 
   return (
     <nav
-      className="plate-flat flex shrink-0 items-stretch gap-1.5 border-x-0 border-b-0 p-1.5"
+      className="flex shrink-0 items-stretch gap-1.5 border-t border-line bg-surface p-1.5"
       aria-label="Build steps"
     >
       {plates.map((plate, index) => {
@@ -130,19 +130,18 @@ export function BuildRail({
             onClick={() => onView(plate.id)}
             aria-current={selected ? "step" : undefined}
             className={cn(
-              "rail-plate relative flex flex-1 items-center gap-2 px-3 py-1.5 text-left",
-              plate.state === "active" && "rail-plate-active",
-              plate.state === "done" && "rail-plate-done",
-              plate.state === "failed" && "rail-plate-failed",
-              selected &&
-                "ring-2 ring-ink/60 ring-offset-1 ring-offset-plate-raised"
+              "step relative flex flex-1 items-center gap-2 px-3 py-1.5 text-left",
+              plate.state === "active" && "step-active",
+              plate.state === "done" && "step-done",
+              plate.state === "failed" && "step-failed",
+              selected && "ring-2 ring-ink/60 ring-offset-1 ring-offset-surface"
             )}
           >
             <span
               className={cn(
                 "grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold",
                 plate.state === "idle"
-                  ? "bg-plate-edge text-ink-soft"
+                  ? "bg-line text-slate"
                   : "bg-white/25 text-white"
               )}
               aria-hidden

@@ -65,9 +65,9 @@ export function parseTestOutput(output: string): TestReport {
    ════════════════════════════════════════════════════════════════════════ */
 
 /**
- * elisa gates on pass rate by level: explorer none, builder 50% + 1 auto-fix,
- * architect 80% + 2. v1 ships the builder setting for everyone — a child should
- * see their thing run, so a partial pass still previews.
+ * One setting for everyone in v1: half the checks passing is enough to show the
+ * child their project, with a single repair attempt below that. A child should
+ * see the thing they made, so a partial pass still previews.
  */
 export const TEST_GATE = {
   minPassRate: 0.5,

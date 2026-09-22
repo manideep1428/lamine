@@ -3,7 +3,7 @@
 /**
  * Publish — copy the project out of the sandbox and host it properly.
  *
- * Two rules from PLAN.md §12 are enforced here, not in the UI:
+ * Two rules from ARCHITECTURE.md §10 are enforced here, not in the UI:
  *
  *  1. A project is private until someone deliberately publishes it. The gate is
  *     a grown-up confirmation, and it is honest about what it is: a speed bump,

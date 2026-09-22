@@ -37,7 +37,7 @@ paths are usable.
 
 ## Two settings that are not optional
 
-Both come from PLAN.md §9, and both are about the child rather than about our
+Both come from ARCHITECTURE.md §9, and both are about the child rather than about our
 infrastructure — the microVM already handles that.
 
 1. **Autopause.** `convex/lib/sandbox.ts` creates sandboxes with

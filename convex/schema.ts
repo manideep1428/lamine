@@ -5,7 +5,7 @@ import { v } from "convex/values"
  * There are no accounts. `ownerId` is a random UUID from the browser's
  * localStorage, so it is a claim rather than an identity. The real gate is
  * `secret`: every private read and every write must present it. Possession of
- * the link is the permission. See lib/storage.ts and PLAN.md §3.
+ * the link is the permission. See lib/storage.ts and ARCHITECTURE.md §3.
  */
 export default defineSchema({
   projects: defineTable({
@@ -79,8 +79,8 @@ export default defineSchema({
 
   /**
    * The narrator feed, agent tool calls, test results and teaching moments all
-   * land here. This single table replaces elisa's entire WebSocket layer: we
-   * insert a row, and every subscribed client updates.
+   * land here. This single table is the whole realtime layer: we insert a row,
+   * and every subscribed client updates. No sockets, no connection manager.
    */
   events: defineTable({
     sessionId: v.id("sessions"),

@@ -46,8 +46,8 @@ export function TaskGraph({ tasks }: { tasks: TaskRow[] }) {
 
   if (tasks.length === 0) {
     return (
-      <div className="baseplate-deep grid h-full place-items-center p-8 text-center">
-        <p className="max-w-sm text-sm text-ink-soft">
+      <div className="plate-grid grid h-full place-items-center p-8 text-center">
+        <p className="max-w-sm text-sm text-slate">
           Press <strong>GO!</strong> and your helpers will work out a plan.
           Every step shows up here, and lights up as it gets done.
         </p>
@@ -56,7 +56,7 @@ export function TaskGraph({ tasks }: { tasks: TaskRow[] }) {
   }
 
   return (
-    <div className="baseplate-deep h-full overflow-auto p-6">
+    <div className="plate-grid h-full overflow-auto p-6">
       <ol className="sr-only">
         {tasks.map((task) => (
           <li key={task.taskId}>
@@ -88,7 +88,7 @@ export function TaskGraph({ tasks }: { tasks: TaskRow[] }) {
               fill="none"
               strokeWidth={3}
               strokeLinecap="round"
-              className={edge.done ? "stroke-brick-green" : "stroke-plate-edge"}
+              className={edge.done ? "stroke-brick-green" : "stroke-line"}
             />
           ))}
         </svg>
@@ -97,7 +97,7 @@ export function TaskGraph({ tasks }: { tasks: TaskRow[] }) {
           <article
             key={task.taskId}
             className={cn(
-              "absolute flex flex-col justify-center rounded-xl px-3 pt-4 pb-2",
+              "absolute flex flex-col justify-center rounded-xl px-3 py-2.5",
               statusClass(task.status)
             )}
             style={{ left: x, top: y, width: NODE_W, height: NODE_H }}
@@ -109,7 +109,7 @@ export function TaskGraph({ tasks }: { tasks: TaskRow[] }) {
               {task.agentName} {ROLE_LABEL[task.role] ?? task.role}
             </p>
             {task.verdict ? (
-              <p className="mt-0.5 text-[10px] font-bold tracking-wide uppercase opacity-90">
+              <p className="mt-0.5 text-[11px] font-semibold opacity-90">
                 {task.verdict}
               </p>
             ) : null}
@@ -122,11 +122,11 @@ export function TaskGraph({ tasks }: { tasks: TaskRow[] }) {
         {tasks
           .filter((t) => t.summary && t.status !== "pending")
           .map((task) => (
-            <div key={task.taskId} className="plate px-3 py-2">
+            <div key={task.taskId} className="panel px-3 py-2">
               <p className="font-display text-[12px] font-semibold text-ink">
                 {task.name}
               </p>
-              <p className="text-[12px] leading-snug text-ink-soft">
+              <p className="text-[12px] leading-snug text-slate">
                 {task.summary}
               </p>
             </div>
@@ -141,11 +141,11 @@ function statusClass(status: string): string {
     case "done":
       return "brick bg-brick-green"
     case "running":
-      return "brick brick-studs bg-brick-blue animate-brick-bob"
+      return "brick bg-brick-blue"
     case "failed":
       return "brick bg-brick-red"
     default:
-      return "plate text-ink-soft"
+      return "panel text-slate"
   }
 }
 

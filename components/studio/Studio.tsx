@@ -5,10 +5,14 @@ import Link from "next/link"
 import dynamic from "next/dynamic"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import type { BlockCanvasHandle } from "@/components/blocks/BlockCanvas"
+import type {
+  BlockCanvasHandle,
+  BrickSelection,
+} from "@/components/blocks/BlockCanvas"
 import { isConvexConfigured } from "@/components/convex-client-provider"
 import { NuggetPicker } from "@/components/explorer/NuggetPicker"
-import { BrickTray } from "@/components/studio/BrickTray"
+import { BrickEditor } from "@/components/studio/BrickEditor"
+import { BRICK_DRAG_TYPE, BrickTray } from "@/components/studio/BrickTray"
 import { BuddyDock } from "@/components/studio/BuddyDock"
 import { BuildRail, type StudioView } from "@/components/studio/BuildRail"
 import { ChecksPanel } from "@/components/studio/ChecksPanel"
@@ -32,7 +36,7 @@ const BlockCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="grid h-full place-items-center text-sm text-ink-faint">
+      <div className="grid h-full place-items-center text-sm text-slate">
         Tipping out the bricks…
       </div>
     ),
@@ -62,6 +66,8 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
   const [waking, setWaking] = useState(false)
   const [sending, setSending] = useState(false)
   const [nudge, setNudge] = useState<string | null>(null)
+  const [selected, setSelected] = useState<BrickSelection | null>(null)
+  const [dropActive, setDropActive] = useState(false)
 
   /* ── build state, live from Convex ── */
   const secret = project.secret
@@ -122,9 +128,59 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
   }, [interpreted.spec, interpreted.problems])
 
   /* ── the tray ── */
-  const onAddBrick = useCallback((type: string) => {
-    const result = canvas.current?.addBrick(type)
-    setNudge(result?.ok ? null : (result?.message ?? null))
+  const onAddBrick = useCallback(
+    (type: string, at?: { clientX: number; clientY: number }) => {
+      const result = canvas.current?.addBrick(type, at)
+      setNudge(result?.ok ? null : (result?.message ?? null))
+    },
+    []
+  )
+
+  const onFieldChange = useCallback(
+    (field: string, value: string) => {
+      if (!selected) return
+      canvas.current?.setField(selected.blockId, field, value)
+      // Echo immediately so the textarea stays responsive; the canvas confirms it
+      // on the next change event.
+      setSelected({
+        ...selected,
+        fields: selected.fields.map((f) =>
+          f.name === field ? { ...f, value } : f
+        ),
+      })
+    },
+    [selected]
+  )
+
+  const onRemoveBrick = useCallback(() => {
+    if (!selected) return
+    canvas.current?.removeBrick(selected.blockId)
+    setSelected(null)
+  }, [selected])
+
+  /** A brick dragged out of the tray and dropped on the board. */
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      setDropActive(false)
+      canvas.current?.highlightTarget(null)
+      const type = event.dataTransfer.getData(BRICK_DRAG_TYPE)
+      if (!type) return
+      event.preventDefault()
+      onAddBrick(type, { clientX: event.clientX, clientY: event.clientY })
+    },
+    [onAddBrick]
+  )
+
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    if (!event.dataTransfer.types.includes(BRICK_DRAG_TYPE)) return
+    // Without preventDefault the browser refuses the drop outright.
+    event.preventDefault()
+    event.dataTransfer.dropEffect = "copy"
+    setDropActive(true)
+    canvas.current?.highlightTarget({
+      clientX: event.clientX,
+      clientY: event.clientY,
+    })
   }, [])
 
   const onPickExample = useCallback((example: ExampleNugget | null) => {
@@ -230,7 +286,7 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
   }
 
   return (
-    <div className="flex h-svh flex-col overflow-hidden bg-plate">
+    <div className="flex h-svh flex-col overflow-hidden bg-paper">
       <TopBar
         name={project.name}
         onRename={project.rename}
@@ -256,25 +312,53 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
 
         <main className="relative min-w-0 flex-1">
           {/* The canvas stays mounted across views so Blockly keeps its state. */}
-          <div className={view === "bricks" ? "baseplate h-full" : "hidden"}>
+          <div
+            className={
+              view === "bricks" ? "plate-grid relative h-full" : "hidden"
+            }
+            onDragOver={onDragOver}
+            onDragLeave={() => {
+              setDropActive(false)
+              canvas.current?.highlightTarget(null)
+            }}
+            onDrop={onDrop}
+          >
             <BlockCanvas
               handleRef={canvas}
               initialWorkspace={project.initialWorkspace}
               onChange={onCanvasChange}
+              onSelect={setSelected}
               readOnly={building}
             />
+
+            {/* Shown only while a tray brick is over the board. */}
+            {dropActive ? (
+              <div className="pointer-events-none absolute inset-2 z-20 rounded-xl border-2 border-dashed border-brick-blue/60 bg-brick-blue/5" />
+            ) : null}
+            {/* One slot, two states: the selected brick's words while a brick is
+                selected, otherwise what the whole stack adds up to. */}
             <div className="pointer-events-none absolute inset-0">
-              <Instructions
-                spec={interpreted.spec}
-                warnings={interpreted.warnings}
-                problems={interpreted.problems}
-              />
+              {selected ? (
+                <BrickEditor
+                  selection={selected}
+                  onChange={onFieldChange}
+                  onRemove={onRemoveBrick}
+                  onClose={() => setSelected(null)}
+                  disabled={building}
+                />
+              ) : (
+                <Instructions
+                  spec={interpreted.spec}
+                  warnings={interpreted.warnings}
+                  problems={interpreted.problems}
+                />
+              )}
             </div>
             {!building ? (
               <button
                 type="button"
                 onClick={() => setPicking(true)}
-                className="plate absolute top-4 right-4 z-10 px-3 py-1.5 text-[12px] font-semibold text-ink-soft hover:bg-plate-hover"
+                className="panel absolute top-4 right-4 z-10 px-3 py-1.5 text-[12px] font-semibold text-slate hover:bg-paper-sunken"
               >
                 Start from an example
               </button>
@@ -351,7 +435,7 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
-    <div className="baseplate grid h-svh place-items-center text-sm text-ink-soft">
+    <div className="plate-grid grid h-svh place-items-center text-sm text-slate">
       {children}
     </div>
   )
@@ -359,21 +443,18 @@ function Centered({ children }: { children: React.ReactNode }) {
 
 function NoAccess({ reason }: { reason: "denied" | "missing" }) {
   return (
-    <div className="baseplate flex h-svh flex-col items-center justify-center gap-4 p-8 text-center">
+    <div className="plate-grid flex h-svh flex-col items-center justify-center gap-4 p-8 text-center">
       <h1 className="font-display text-2xl font-bold text-ink">
         {reason === "missing"
           ? "That project isn't here"
           : "I can't open that one"}
       </h1>
-      <p className="max-w-md text-sm leading-snug text-ink-soft">
+      <p className="max-w-md text-sm leading-snug text-slate">
         {reason === "missing"
           ? "It may have been deleted."
           : "Projects live in the browser that made them. If it's yours, open it on that computer — or ask for the share link, which carries the key."}
       </p>
-      <Link
-        href="/"
-        className="brick brick-studs bg-brick-blue px-4 pt-4 pb-2 text-sm"
-      >
+      <Link href="/" className="brick bg-brick-blue px-4 py-2.5 text-sm">
         Back to my projects
       </Link>
     </div>
@@ -382,11 +463,11 @@ function NoAccess({ reason }: { reason: "denied" | "missing" }) {
 
 function BackendMissing() {
   return (
-    <div className="baseplate flex h-svh flex-col items-center justify-center gap-4 p-8 text-center">
+    <div className="plate-grid flex h-svh flex-col items-center justify-center gap-4 p-8 text-center">
       <h1 className="font-display text-2xl font-bold text-ink">
         The workshop isn&apos;t connected
       </h1>
-      <p className="max-w-md text-sm leading-snug text-ink-soft">
+      <p className="max-w-md text-sm leading-snug text-slate">
         A grown-up needs to set{" "}
         <code className="font-mono">NEXT_PUBLIC_CONVEX_URL</code> and run{" "}
         <code className="font-mono">bunx convex dev</code>. Bricks and building

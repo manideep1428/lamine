@@ -17,10 +17,14 @@
 import * as Blockly from "blockly/core"
 import { beforeAll, describe, expect, it } from "vitest"
 
+import { addBrick, findBlockAt } from "./BlockCanvas"
 import {
   BLOCK_COLOUR,
+  brickLabel,
   BRICK,
   EXAMPLE_CHOICES,
+  fieldLabel,
+  isLongField,
   registerBlocks,
   TRAY,
   VISUAL_CHOICES,
@@ -271,6 +275,52 @@ describe("real Blockly output feeds the interpreter", () => {
  * dropped, this is where it shows up — before a kid picks the example and gets
  * an empty canvas.
  */
+/**
+ * The editor panel reads its labels from FIELD_LABELS. A field with no entry
+ * falls back to its raw Blockly name, so a child would be asked to fill in "WHAT"
+ * — which is why this walks the real blocks rather than the label table.
+ */
+describe("editor panel labels", () => {
+  it("labels every editable field on every brick", () => {
+    const workspace = new Blockly.Workspace()
+    for (const type of ALL_TYPES) {
+      const block = workspace.newBlock(type)
+      for (const input of block.inputList) {
+        for (const field of input.fieldRow) {
+          if (!field.EDITABLE || !field.name) continue
+          const label = fieldLabel(type, field.name)
+          expect(label, `${type}.${field.name} has no label`).not.toBe(
+            field.name.toLowerCase()
+          )
+          // Labels are questions or instructions a child reads, not field names.
+          expect(
+            label.length,
+            `${type}.${field.name} label is too terse`
+          ).toBeGreaterThan(4)
+        }
+      }
+    }
+  })
+
+  it("gives every brick a name for the panel heading", () => {
+    for (const type of ALL_TYPES) {
+      expect(brickLabel(type), `${type} has no tray label`).not.toBe("Brick")
+    }
+  })
+
+  it("routes sentence fields to a textarea and short ones to an input", () => {
+    // The fields a child writes prose into.
+    expect(isLongField(BLOCK.goal, "GOAL")).toBe(true)
+    expect(isLongField(BLOCK.feature, "WHAT")).toBe(true)
+    expect(isLongField(BLOCK.proof, "CHECK")).toBe(true)
+    expect(isLongField(BLOCK.whenThen, "WHEN")).toBe(true)
+    expect(isLongField(BLOCK.whenThen, "THEN")).toBe(true)
+    // A dropdown and a short name are not prose.
+    expect(isLongField(BLOCK.goal, "KIND")).toBe(false)
+    expect(isLongField(BLOCK.rule, "NAME")).toBe(false)
+  })
+})
+
 describe("starter nuggets", () => {
   it.each(EXAMPLES.map((e) => [e.name, e] as const))(
     "%s loads into Blockly and is ready to build",
@@ -319,3 +369,123 @@ describe("starter nuggets", () => {
     expect(result.problems.join(" ")).toMatch(/what you want to make/)
   })
 })
+
+describe("dropping bricks directly onto blocks", () => {
+  it("finds a block at workspace coordinates and ignores far points", () => {
+    const workspace = freshWorkspace()
+    const goal = workspace.newBlock(BLOCK.goal)
+    goal.moveBy(48, 40)
+
+    const hit = findBlockAt(workspace, { x: 60, y: 55 })
+    expect(hit?.id).toBe(goal.id)
+
+    const miss = findBlockAt(workspace, { x: 800, y: 800 })
+    expect(miss).toBeNull()
+  })
+
+  it("splices a body brick under Goal when dropped on Goal", () => {
+    const workspace = freshWorkspace()
+    const goal = workspace.newBlock(BLOCK.goal)
+    goal.moveBy(48, 40)
+    const show = workspace.newBlock(BLOCK.show)
+    goal.nextConnection!.connect(show.previousConnection!)
+
+    const result = addBrick(workspace, BLOCK.feature, { x: 60, y: 50 })
+    expect(result.ok).toBe(true)
+
+    // Goal -> Feature -> Show
+    const first = goal.nextConnection!.targetBlock()
+    expect(first?.type).toBe(BLOCK.feature)
+    expect(first?.nextConnection!.targetBlock()?.type).toBe(BLOCK.show)
+  })
+
+  it("splices a body brick after a feature when dropped on that feature", () => {
+    const workspace = freshWorkspace()
+    const goal = workspace.newBlock(BLOCK.goal)
+    goal.moveBy(48, 40)
+    const f1 = workspace.newBlock(BLOCK.feature)
+    f1.moveBy(48, 100)
+    const show = workspace.newBlock(BLOCK.show)
+    goal.nextConnection!.connect(f1.previousConnection!)
+    f1.nextConnection!.connect(show.previousConnection!)
+
+    // Drop When/Then on Feature 1
+    const result = addBrick(workspace, BLOCK.whenThen, { x: 60, y: 110 })
+    expect(result.ok).toBe(true)
+
+    // Goal -> f1 -> whenThen -> show
+    expect(goal.nextConnection!.targetBlock()?.id).toBe(f1.id)
+    const middle = f1.nextConnection!.targetBlock()
+    expect(middle?.type).toBe(BLOCK.whenThen)
+    expect(middle?.nextConnection!.targetBlock()?.id).toBe(show.id)
+  })
+
+  it("inserts a Proof brick into the PROOFS slot when dropped on a Feature", () => {
+    const workspace = freshWorkspace()
+    const goal = workspace.newBlock(BLOCK.goal)
+    goal.moveBy(48, 40)
+    const feature = workspace.newBlock(BLOCK.feature)
+    feature.moveBy(48, 100)
+    goal.nextConnection!.connect(feature.previousConnection!)
+
+    // Drop Proof on Feature
+    const result = addBrick(workspace, BLOCK.proof, { x: 60, y: 110 })
+    expect(result.ok).toBe(true)
+
+    const nested = feature.getInput("PROOFS")!.connection!.targetBlock()
+    expect(nested?.type).toBe(BLOCK.proof)
+  })
+
+  it("splices a second Proof brick after an existing Proof when dropped on it", () => {
+    const workspace = freshWorkspace()
+    const goal = workspace.newBlock(BLOCK.goal)
+    goal.moveBy(48, 40)
+    const feature = workspace.newBlock(BLOCK.feature)
+    goal.nextConnection!.connect(feature.previousConnection!)
+    const proof1 = workspace.newBlock(BLOCK.proof)
+    proof1.moveBy(60, 130)
+    feature.getInput("PROOFS")!.connection!.connect(proof1.previousConnection!)
+
+    // Drop another Proof directly on proof1
+    const result = addBrick(workspace, BLOCK.proof, { x: 70, y: 140 })
+    expect(result.ok).toBe(true)
+
+    expect(feature.getInput("PROOFS")!.connection!.targetBlock()?.id).toBe(
+      proof1.id
+    )
+    const proof2 = proof1.nextConnection!.targetBlock()
+    expect(proof2?.type).toBe(BLOCK.proof)
+  })
+
+  it("inserts a body brick above Show it when dropped on Show it", () => {
+    const workspace = freshWorkspace()
+    const goal = workspace.newBlock(BLOCK.goal)
+    goal.moveBy(48, 40)
+    const feature = workspace.newBlock(BLOCK.feature)
+    const show = workspace.newBlock(BLOCK.show)
+    show.moveBy(48, 180)
+    goal.nextConnection!.connect(feature.previousConnection!)
+    feature.nextConnection!.connect(show.previousConnection!)
+
+    // Drop Remembers on Show it
+    const result = addBrick(workspace, BLOCK.remembers, { x: 60, y: 190 })
+    expect(result.ok).toBe(true)
+
+    // Goal -> Feature -> Remembers -> Show
+    expect(feature.nextConnection!.targetBlock()?.type).toBe(BLOCK.remembers)
+    expect(
+      feature.nextConnection!.targetBlock()?.nextConnection!.targetBlock()?.id
+    ).toBe(show.id)
+  })
+
+  it("refuses a second Goal brick with a kid-facing explanation", () => {
+    const workspace = freshWorkspace()
+    const goal = workspace.newBlock(BLOCK.goal)
+    goal.moveBy(48, 40)
+
+    const result = addBrick(workspace, BLOCK.goal, { x: 50, y: 50 })
+    expect(result.ok).toBe(false)
+    expect(result.message).toMatch(/already have a Goal brick/)
+  })
+})
+

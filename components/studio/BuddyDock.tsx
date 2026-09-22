@@ -22,7 +22,7 @@ const MOOD_TINT: Record<string, string> = {
   excited: "border-brick-blue/40",
   encouraging: "border-brick-green/40",
   concerned: "border-brick-red/40",
-  celebrating: "border-accent-sun/70",
+  celebrating: "border-brick-amber/70",
 }
 
 interface FeedItem {
@@ -119,18 +119,18 @@ export function BuddyDock({
 
   return (
     <aside
-      className="plate-flat flex w-80 shrink-0 flex-col border-y-0 border-r-0"
+      className="flex w-80 shrink-0 flex-col border-l border-line bg-surface"
       aria-label="Your helpers"
     >
       {/* The crew, as three bricks. */}
-      <div className="flex items-center gap-1.5 border-b-2 border-plate-edge p-2">
+      <div className="flex items-center gap-1.5 border-b-2 border-line p-2">
         {(Object.keys(BUDDY_LOOK) as BuddyId[]).map((id) => (
           <span
             key={id}
             className={cn(
-              "brick flex flex-1 items-center justify-center gap-1 px-2 pt-3.5 pb-1.5 text-[11px] transition-opacity",
+              "brick flex flex-1 items-center justify-center gap-1 px-2 py-2 text-[11px] transition-opacity",
               BUDDY_BRICK[id],
-              talking === id ? "brick-studs opacity-100" : "opacity-55"
+              talking === id ? "opacity-100" : "opacity-55"
             )}
             title={BUDDY_LOOK[id].name}
           >
@@ -147,14 +147,14 @@ export function BuddyDock({
       >
         {showRaw ? (
           raw.length === 0 ? (
-            <p className="py-6 text-center text-[13px] text-ink-faint">
+            <p className="py-6 text-center text-[13px] text-slate">
               Every tool call and test result lands here while a build runs.
             </p>
           ) : (
-            <ul className="space-y-1 font-mono text-[11px] leading-relaxed text-ink-soft">
+            <ul className="space-y-1 font-mono text-[11px] leading-relaxed text-slate">
               {raw.map((event) => (
                 <li key={event._id} className="flex gap-2">
-                  <span className="shrink-0 text-ink-faint">
+                  <span className="shrink-0 text-slate">
                     {event.kind === "error"
                       ? "!"
                       : event.kind === "test_result"
@@ -174,7 +174,7 @@ export function BuddyDock({
             </ul>
           )
         ) : story.length === 0 ? (
-          <p className="py-6 text-center text-[13px] leading-snug text-ink-faint">
+          <p className="py-6 text-center text-[13px] leading-snug text-slate">
             {planning
               ? "Codey is reading your bricks…"
               : "Snap some bricks together, then press GO! Your helpers will talk to you here."}
@@ -184,7 +184,7 @@ export function BuddyDock({
         )}
       </div>
 
-      <div className="border-t-2 border-plate-edge p-2">
+      <div className="border-t-2 border-line p-2">
         <form
           className="flex items-center gap-1"
           onSubmit={(event) => {
@@ -201,7 +201,7 @@ export function BuddyDock({
             onChange={(event) => setDraft(event.target.value)}
             placeholder="Ask your helpers…"
             maxLength={600}
-            className="min-w-0 flex-1 rounded-lg border-2 border-plate-edge bg-plate px-2.5 py-1.5 text-[13px] outline-none focus:border-brick-blue"
+            className="min-w-0 flex-1 rounded-lg border-2 border-line bg-paper px-2.5 py-1.5 text-[13px] outline-none focus:border-brick-blue"
           />
           {listening.supported ? (
             <button
@@ -215,7 +215,7 @@ export function BuddyDock({
                 "rounded-lg p-2",
                 listening.listening
                   ? "bg-brick-red text-white"
-                  : "text-ink-faint hover:bg-plate-hover hover:text-ink-soft"
+                  : "text-slate hover:bg-paper-sunken hover:text-slate"
               )}
             >
               {listening.listening ? (
@@ -241,7 +241,7 @@ export function BuddyDock({
         <button
           type="button"
           onClick={() => setShowRaw((was) => !was)}
-          className="mt-1.5 w-full text-center text-[11px] text-ink-faint hover:text-ink-soft"
+          className="mt-1.5 w-full text-center text-[11px] text-slate hover:text-slate"
         >
           {showRaw ? "back to the story" : "show me the raw tool calls"}
         </button>
@@ -254,7 +254,7 @@ function Bubble({ item }: { item: FeedItem }) {
   if (item.who === "kid") {
     return (
       <div className="flex justify-end">
-        <p className="max-w-[85%] rounded-xl rounded-br-sm border-2 border-plate-edge bg-plate px-3 py-1.5 text-[13px] text-ink">
+        <p className="max-w-[85%] rounded-xl rounded-br-sm border-2 border-line bg-paper px-3 py-1.5 text-[13px] text-ink">
           {item.text}
         </p>
       </div>
@@ -265,7 +265,7 @@ function Bubble({ item }: { item: FeedItem }) {
   const look = BUDDY_LOOK[who]
 
   return (
-    <div className="animate-snap-in flex items-start gap-2">
+    <div className="snap-in flex items-start gap-2">
       <span
         className={cn(
           "grid size-7 shrink-0 place-items-center rounded-lg text-sm",
@@ -277,13 +277,11 @@ function Bubble({ item }: { item: FeedItem }) {
       </span>
       <div
         className={cn(
-          "min-w-0 flex-1 rounded-xl rounded-tl-sm border-2 bg-plate-raised px-3 py-1.5",
-          MOOD_TINT[item.mood ?? "encouraging"] ?? "border-plate-edge"
+          "min-w-0 flex-1 rounded-xl rounded-tl-sm border-2 bg-surface px-3 py-1.5",
+          MOOD_TINT[item.mood ?? "encouraging"] ?? "border-line"
         )}
       >
-        <p className="text-[10px] font-bold tracking-wide text-ink-faint uppercase">
-          {look.name}
-        </p>
+        <p className="text-[11px] font-semibold text-slate">{look.name}</p>
         <p className="text-[13px] leading-snug break-words whitespace-pre-wrap text-ink">
           {item.text}
         </p>

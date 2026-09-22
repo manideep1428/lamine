@@ -49,7 +49,7 @@ export function SharePanel({
   const shareLink =
     typeof window === "undefined"
       ? ""
-      : `${window.location.origin}/studio/${projectId}#k=${secret}`
+      : `${window.location.origin}/?id=${projectId}#k=${secret}`
 
   const exportUrl = `${SITE_URL}/export?projectId=${projectId}&secret=${encodeURIComponent(secret)}`
 
@@ -104,7 +104,7 @@ export function SharePanel({
       onClick={onClose}
     >
       <div
-        className="plate animate-snap-in w-full max-w-lg rounded-2xl p-5"
+        className="panel snap-in w-full max-w-lg rounded-2xl p-5"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between">
@@ -112,14 +112,14 @@ export function SharePanel({
             <h2 className="font-display text-lg font-semibold text-ink">
               Share {name}
             </h2>
-            <p className="text-xs text-ink-faint">
+            <p className="text-xs text-slate">
               Three ways, from private to public.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-ink-faint hover:bg-plate-hover"
+            className="rounded-lg p-1.5 text-slate hover:bg-paper-sunken"
           >
             <X className="size-4" />
             <span className="sr-only">Close</span>
@@ -129,7 +129,7 @@ export function SharePanel({
         {/* 1 — the link */}
         <section className="mb-4">
           <h3 className="text-sm font-semibold text-ink">Send a link</h3>
-          <p className="mb-2 text-xs text-ink-soft">
+          <p className="mb-2 text-xs text-slate">
             Opens your project on another computer. Anyone who has this link can
             open and change it, so only send it to people you trust.
           </p>
@@ -138,12 +138,12 @@ export function SharePanel({
               readOnly
               value={shareLink}
               onFocus={(event) => event.currentTarget.select()}
-              className="min-w-0 flex-1 rounded-lg bg-plate px-3 py-1.5 font-mono text-[11px] text-ink-soft"
+              className="min-w-0 flex-1 rounded-lg bg-paper px-3 py-1.5 font-mono text-[11px] text-slate"
             />
             <button
               type="button"
               onClick={copyLink}
-              className="rounded-lg bg-plate-hover px-3 py-1.5 text-xs font-medium text-ink-soft hover:bg-plate"
+              className="rounded-lg bg-paper-sunken px-3 py-1.5 text-xs font-medium text-slate hover:bg-paper"
             >
               {copied ? "copied" : "copy"}
             </button>
@@ -151,12 +151,10 @@ export function SharePanel({
         </section>
 
         {/* 2 — publish */}
-        <section className="mb-4 rounded-xl border border-plate-edge bg-plate/60 p-3">
+        <section className="mb-4 rounded-xl border border-line bg-paper-sunken/60 p-3">
           <h3 className="text-sm font-semibold text-ink">
             Put it on the internet{" "}
-            <span className="font-normal text-ink-faint">
-              — grown-up needed
-            </span>
+            <span className="font-normal text-slate">— grown-up needed</span>
           </h3>
 
           {isPublished ? (
@@ -170,7 +168,7 @@ export function SharePanel({
                 <ExternalLink className="size-3.5" />
                 {published.publishedUrl}
               </a>
-              <p className="text-xs text-ink-soft">
+              <p className="text-xs text-slate">
                 {published.fileCount} files are live. This page is public —
                 anyone can see it.
               </p>
@@ -185,13 +183,13 @@ export function SharePanel({
             </div>
           ) : (
             <div className="mt-2 space-y-2">
-              <p className="text-xs text-ink-soft">
+              <p className="text-xs text-slate">
                 This copies the finished files to a permanent web address. It
                 keeps working after the workshop shuts down. Anyone with the
                 address can see it, so don&apos;t put your full name, school,
                 photo or address in your project.
               </p>
-              <label className="flex items-start gap-2 text-xs text-ink-soft">
+              <label className="flex items-start gap-2 text-xs text-slate">
                 <input
                   type="checkbox"
                   checked={grownUp}
@@ -221,13 +219,13 @@ export function SharePanel({
         {/* 3 — download */}
         <section>
           <h3 className="text-sm font-semibold text-ink">Download it</h3>
-          <p className="mb-2 text-xs text-ink-soft">
+          <p className="mb-2 text-xs text-slate">
             A zip with every file. Unzip it, open index.html, and it runs on
             your own computer with no internet.
           </p>
           <a
             href={exportUrl}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-plate-hover px-3 py-1.5 text-xs font-medium text-ink-soft hover:bg-plate"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-paper-sunken px-3 py-1.5 text-xs font-medium text-slate hover:bg-paper"
           >
             <Download className="size-3.5" />
             Download the zip
@@ -235,7 +233,7 @@ export function SharePanel({
         </section>
 
         {message ? (
-          <p className="mt-4 rounded-lg bg-plate-hover px-3 py-2 text-xs text-ink-soft">
+          <p className="mt-4 rounded-lg bg-paper-sunken px-3 py-2 text-xs text-slate">
             {message}
           </p>
         ) : null}

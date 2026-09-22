@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/build-static.mjs",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
@@ -14,10 +14,12 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "convex": "convex dev",
-    "sandbox:template": "e2b template build --name lamine-web --path sandbox"
+    "sandbox:template": "e2b template build --name lamine-web --path sandbox",
+    "deploy": "convex deploy && static-hosting upload --dist ./out --build --prod"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
+    "@convex-dev/static-hosting": "^0.2.1",
     "blockly": "^13.3.0",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.3.2",

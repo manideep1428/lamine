@@ -26,14 +26,14 @@ export function GoButton({
   // Studs and padding are identical in all three states on purpose: varying them
   // changed the brick's height, and the whole header jumped the moment a child's
   // bricks became valid.
-  const shape = "brick brick-studs px-7 pt-4 pb-2.5 text-base tracking-wide"
+  const shape = "brick px-7 py-3 text-base tracking-wide"
 
   if (building) {
     return (
       <button
         type="button"
         onClick={onStop}
-        className={cn(shape, "go-brick-stop")}
+        className={cn(shape, "bg-brick-red")}
       >
         STOP
       </button>
@@ -43,7 +43,7 @@ export function GoButton({
   return (
     <div className="flex items-center gap-3">
       {!ready && reasons.length > 0 ? (
-        <p className="hidden max-w-56 text-right text-[11px] leading-snug text-ink-soft sm:block">
+        <p className="hidden max-w-56 text-right text-[11px] leading-snug text-slate sm:block">
           {reasons[0]}
         </p>
       ) : null}
@@ -52,10 +52,7 @@ export function GoButton({
         onClick={onGo}
         disabled={!ready}
         aria-describedby={!ready && reasons.length ? "go-reasons" : undefined}
-        className={cn(
-          shape,
-          ready ? "go-brick animate-brick-bob" : "go-brick-waiting"
-        )}
+        className={cn(shape, ready ? "bg-brick-green" : "")}
       >
         GO!
       </button>

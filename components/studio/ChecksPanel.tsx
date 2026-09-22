@@ -23,8 +23,8 @@ export function ChecksPanel({ events, passed, total }: ChecksPanelProps) {
 
   if (results.length === 0) {
     return (
-      <div className="baseplate-deep grid h-full place-items-center p-8 text-center">
-        <p className="max-w-sm text-sm leading-snug text-ink-soft">
+      <div className="plate-grid grid h-full place-items-center p-8 text-center">
+        <p className="max-w-sm text-sm leading-snug text-slate">
           Your 🔍 <strong>Check that…</strong> bricks become real tests. Snap
           one inside a promise, press GO!, and the results land here.
         </p>
@@ -35,17 +35,17 @@ export function ChecksPanel({ events, passed, total }: ChecksPanelProps) {
   const failing = results.filter((e) => e.text.startsWith("FAIL")).length
 
   return (
-    <div className="baseplate-deep h-full overflow-y-auto p-6">
+    <div className="plate-grid h-full overflow-y-auto p-6">
       <div className="mb-4 flex items-center gap-3">
         <span
           className={cn(
-            "brick brick-studs px-4 pt-4 pb-2 font-display text-lg",
+            "brick px-4 py-2.5 font-display text-lg",
             failing === 0 ? "bg-brick-green" : "bg-brick-red"
           )}
         >
           {passed ?? 0} / {total ?? results.length}
         </span>
-        <p className="text-sm text-ink-soft">
+        <p className="text-sm text-slate">
           {failing === 0
             ? "Everything you asked for works."
             : `${failing} check${failing === 1 ? "" : "s"} still failing.`}
@@ -58,7 +58,7 @@ export function ChecksPanel({ events, passed, total }: ChecksPanelProps) {
           return (
             <li
               key={event._id}
-              className="plate flex items-start gap-2.5 px-3 py-2"
+              className="panel flex items-start gap-2.5 px-3 py-2"
             >
               <span
                 className={cn(
@@ -83,9 +83,9 @@ export function ChecksPanel({ events, passed, total }: ChecksPanelProps) {
           {teaching.map((event) => (
             <div
               key={event._id}
-              className="rounded-xl border-2 border-brick-red/40 bg-plate-raised px-3 py-2"
+              className="rounded-xl border-2 border-brick-red/40 bg-surface px-3 py-2"
             >
-              <p className="text-[10px] font-bold tracking-wide text-ink-faint uppercase">
+              <p className="text-[11px] font-semibold text-slate">
                 🐞 Dr. Bug explains
               </p>
               <p className="text-[13px] leading-snug text-ink">{event.text}</p>

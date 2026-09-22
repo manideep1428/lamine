@@ -1,10 +1,9 @@
 /**
  * The shared agent prompt skeleton.
  *
- * Read elisa's `prompts/builderAgent.ts`, `testerAgent.ts` and
- * `reviewerAgent.ts` side by side and they are the *same 13 sections in the
- * same order*; only four differ per role. So this module owns the skeleton and
- * each role supplies its four slots — the pattern elisa calls PROMPT_MODULES.
+ * The three roles need the *same 13 sections in the same order*; only four of
+ * them differ per role. So this module owns the skeleton and each role supplies
+ * its four slots, rather than three prompts drifting apart over time.
  *
  * Two sections are byte-identical across all roles and must stay that way:
  * CONTENT_SAFETY and SECURITY. There is a test asserting exactly that.
@@ -20,7 +19,7 @@ import { frameworkGuidance } from "./frameworks"
 /**
  * Neutralise kid-authored text before it lands in a prompt.
  *
- * Ported from elisa's `sanitizePlaceholder`. Block fields are a genuine
+ * Block fields are a genuine
  * injection surface — a child typing "ignore your rules" into a Goal block is
  * something that will happen, if only out of curiosity.
  */
@@ -94,8 +93,7 @@ export interface RoleModule {
 }
 
 /**
- * Reviewer-only. The single most valuable prompt in elisa and not at all
- * obvious: it tells the reviewer to trace execution *order*, not just read
+ * Reviewer-only, and the least obvious prompt in the set: it tells the reviewer to trace execution *order*, not just read
  * top-to-bottom. These are the bugs that make a kid's game silently not start.
  */
 const RUNTIME_CORRECTNESS = `## Runtime Correctness
@@ -184,7 +182,7 @@ export interface SystemPromptInput {
   maxTurns: number
 }
 
-/** The 13 sections, in elisa's order. */
+/** The 13 sections, in order. */
 export function buildSystemPrompt(input: SystemPromptInput): string {
   const role = ROLE_MODULES[input.role]
   const name = sanitizePlaceholder(input.agentName) || "Codey"
@@ -254,7 +252,7 @@ export interface TaskPromptInput {
   fileManifest: readonly string[]
 }
 
-/** elisa caps predecessor context so early tasks cannot crowd out the task itself. */
+/** Predecessor context is capped so early tasks cannot crowd out this one. */
 export const PREDECESSOR_WORD_CAP = 600
 
 export function buildTaskPrompt(input: TaskPromptInput): string {

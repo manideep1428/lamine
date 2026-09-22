@@ -11,7 +11,7 @@ import {
  * The published snapshot.
  *
  * E2B is metered, ephemeral compute, so a finished project never lives there
- * (PLAN.md §10). Files are copied into Convex file storage and served by
+ * (ARCHITECTURE.md §8). Files are copied into Convex file storage and served by
  * `convex/http.ts` from `.convex.site` — permanent, fast, and on a different
  * origin from the app.
  *

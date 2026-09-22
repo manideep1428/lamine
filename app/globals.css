@@ -5,54 +5,44 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ═══════════════════════════════════════════════════════════════════════
-   LAMINE DESIGN SYSTEM — BRICKS
-   A studded, tactile language: cool grey baseplate, saturated bricks, hard
-   offset shadows instead of soft glass. Deliberately not elisa's warm atelier
-   palette — same block set, different toybox.
+   LAMINE — FLAT BRICKS
+
+   Colour and shape carry the brick idea. There is no fake depth anywhere: no
+   inset lips, no offset shadows, no moulded studs. A brick is a saturated
+   rectangle with a rounded corner and white text, and that is enough.
 
    Two rules:
-   · Saturation belongs to the bricks. The chrome stays grey so the canvas reads.
-   · Shadows are offset, never blurred. Blur reads as glass; offset reads as a
-     physical thing sitting on a plate.
+   · Colour belongs to the bricks. Chrome stays paper, ink and one hairline.
+   · One motion moment per screen, and it has to mean something.
    ═══════════════════════════════════════════════════════════════════════ */
 
 @theme {
-  /* ── The baseplate (cool neutral) ── */
-  --color-plate-deep: #e7ecf3;
-  --color-plate: #eef2f7;
-  --color-plate-raised: #ffffff;
-  --color-plate-sunken: #dde4ee;
-  --color-plate-edge: #c3cddc;
-  --color-plate-hover: #e2e9f2;
+  /* ── Base ── */
+  --color-paper: #f7f8fa;
+  --color-paper-sunken: #eef1f5;
+  --color-surface: #ffffff;
+  --color-ink: #141a24;
+  --color-slate: #667081;
+  --color-line: #dce1e9;
 
-  /* ── Ink ── */
-  --color-ink: #16202e;
-  --color-ink-soft: #55637a;
-  --color-ink-faint: #8b97a9;
+  /* ── Bricks. Dark enough to carry white text, because Blockly paints all
+       block text a single colour. ── */
+  --color-brick-blue: #1250d8;
+  --color-brick-green: #0f7a41;
+  --color-brick-amber: #9a6000;
+  --color-brick-red: #c21f2b;
+  --color-brick-purple: #6b34c9;
+  --color-brick-teal: #0c7e8b;
 
-  /* ── Bricks. Dark enough that white text on them is legible, because Blockly
-       paints every block's text one single colour. ── */
-  --color-brick-red: #b81217;
-  --color-brick-amber: #8f5f02;
-  --color-brick-green: #147a34;
-  --color-brick-teal: #0b6e78;
-  --color-brick-blue: #0b52bd;
-  --color-brick-purple: #6a2fb0;
+  /* Slightly darker, for a brick's outline on the canvas. */
+  --color-edge-blue: #0c3a9e;
+  --color-edge-green: #0a5a2f;
+  --color-edge-amber: #6e4400;
+  --color-edge-red: #8e1620;
+  --color-edge-purple: #4d2493;
+  --color-edge-teal: #095b64;
 
-  /* Darker edges, for the moulded lip. */
-  --color-edge-red: #7d0a0e;
-  --color-edge-amber: #634101;
-  --color-edge-green: #0d5222;
-  --color-edge-teal: #074a52;
-  --color-edge-blue: #073a86;
-  --color-edge-purple: #4a1f7d;
-
-  /* ── Bright accents. Highlights and dots only — never behind text. ── */
-  --color-accent-sun: #f6c31c;
-  --color-accent-lime: #37c65d;
-  --color-accent-sky: #3f9bf5;
-
-  /* ── Fonts (wired up in app/layout.tsx via next/font) ── */
+  /* ── Fonts, wired up in app/layout.tsx via next/font ── */
   --font-display: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
   --font-body: var(--font-outfit), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
@@ -95,36 +85,35 @@
   --radius-3xl: calc(var(--radius) * 2.2);
 }
 
-/* shadcn tokens remapped onto the brick palette, so any shadcn component we
-   drop in already belongs here. */
+/* shadcn tokens remapped onto this palette, so a dropped-in component belongs. */
 :root {
-  --background: #eef2f7;
-  --foreground: #16202e;
+  --background: #f7f8fa;
+  --foreground: #141a24;
   --card: #ffffff;
-  --card-foreground: #16202e;
+  --card-foreground: #141a24;
   --popover: #ffffff;
-  --popover-foreground: #16202e;
-  --primary: #0b52bd;
+  --popover-foreground: #141a24;
+  --primary: #1250d8;
   --primary-foreground: #ffffff;
-  --secondary: #dde4ee;
-  --secondary-foreground: #16202e;
-  --muted: #e7ecf3;
-  --muted-foreground: #55637a;
-  --accent: #e2e9f2;
-  --accent-foreground: #16202e;
-  --destructive: #b81217;
-  --border: #c3cddc;
-  --input: #c3cddc;
-  --ring: rgba(11, 82, 189, 0.4);
+  --secondary: #eef1f5;
+  --secondary-foreground: #141a24;
+  --muted: #eef1f5;
+  --muted-foreground: #667081;
+  --accent: #eef1f5;
+  --accent-foreground: #141a24;
+  --destructive: #c21f2b;
+  --border: #dce1e9;
+  --input: #dce1e9;
+  --ring: rgba(18, 80, 216, 0.35);
   --radius: 0.75rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #16202e;
-  --sidebar-primary: #0b52bd;
+  --sidebar-foreground: #141a24;
+  --sidebar-primary: #1250d8;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e2e9f2;
-  --sidebar-accent-foreground: #16202e;
-  --sidebar-border: #c3cddc;
-  --sidebar-ring: rgba(11, 82, 189, 0.4);
+  --sidebar-accent: #eef1f5;
+  --sidebar-accent-foreground: #141a24;
+  --sidebar-border: #dce1e9;
+  --sidebar-ring: rgba(18, 80, 216, 0.35);
 }
 
 @layer base {
@@ -134,7 +123,7 @@
   html {
     font-family: var(--font-body);
     color: var(--color-ink);
-    background: var(--color-plate);
+    background: var(--color-paper);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -147,275 +136,155 @@
   }
 }
 
-/* ── The baseplate ────────────────────────────────────────────────────
-   Studs, drawn once as a repeating radial gradient. This is the single
-   strongest signal of the whole language, and it costs no DOM. */
-
-.baseplate {
-  background-color: var(--color-plate);
-  background-image: radial-gradient(
-    circle at center,
-    rgba(22, 32, 46, 0.075) 0,
-    rgba(22, 32, 46, 0.075) 5px,
-    transparent 5.5px
-  );
-  background-size: 28px 28px;
-  background-position: 8px 8px;
-}
-
-.baseplate-deep {
-  background-color: var(--color-plate-deep);
-  background-image: radial-gradient(
-    circle at center,
-    rgba(22, 32, 46, 0.055) 0,
-    rgba(22, 32, 46, 0.055) 5px,
-    transparent 5.5px
-  );
-  background-size: 28px 28px;
-  background-position: 8px 8px;
-}
-
-/* ── Plates and bricks ───────────────────────────────────────────────────
-   Everything from here to the end of the section lives in @layer components ON
-   PURPOSE. Unlayered CSS beats Tailwind's utilities, which meant
-   `plate-flat border-y-0` silently kept all four borders. Inside the components
-   layer a utility always wins — which is what a reader expects when they add one.
-   ── */
-
 @layer components {
-  .plate {
-    background: var(--color-plate-raised);
-    border: 2px solid var(--color-plate-edge);
-    border-radius: 12px;
-    box-shadow: 0 3px 0 0 var(--color-plate-edge);
-  }
-
-  .plate-flat {
-    background: var(--color-plate-raised);
-    border: 2px solid var(--color-plate-edge);
-  }
-
-  /* ── Bricks: the interactive things. ─────────────────────────────────── */
+  /* ── Bricks ───────────────────────────────────────────────────────────
+       Flat. The only feedback is colour and a slight press. */
 
   .brick {
     position: relative;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
     color: #fff;
     font-family: var(--font-display);
     font-weight: 600;
-    /* The lip underneath is what makes it read as moulded plastic. */
-    box-shadow:
-      inset 0 -4px 0 0 rgba(0, 0, 0, 0.26),
-      inset 0 2px 0 0 rgba(255, 255, 255, 0.3),
-      0 3px 0 0 rgba(22, 32, 46, 0.22);
     transition:
-      transform 0.12s ease,
-      box-shadow 0.12s ease,
-      filter 0.12s ease;
+      filter 0.12s ease,
+      transform 0.1s ease;
   }
 
   .brick:hover:not(:disabled) {
-    filter: brightness(1.06);
-    transform: translateY(-1px);
-    box-shadow:
-      inset 0 -4px 0 0 rgba(0, 0, 0, 0.26),
-      inset 0 2px 0 0 rgba(255, 255, 255, 0.3),
-      0 4px 0 0 rgba(22, 32, 46, 0.22);
+    filter: brightness(1.08);
   }
 
-  /* Pressing a brick pushes it into the plate. */
   .brick:active:not(:disabled) {
-    transform: translateY(3px);
-    box-shadow:
-      inset 0 -2px 0 0 rgba(0, 0, 0, 0.26),
-      inset 0 2px 0 0 rgba(255, 255, 255, 0.25),
-      0 0 0 0 rgba(22, 32, 46, 0.22);
+    transform: scale(0.985);
   }
 
   .brick:disabled {
-    background: var(--color-plate-sunken) !important;
-    color: var(--color-ink-faint);
-    box-shadow: inset 0 -3px 0 0 rgba(0, 0, 0, 0.08);
+    background: var(--color-paper-sunken) !important;
+    color: var(--color-slate);
     cursor: not-allowed;
   }
 
-  /* Studs, drawn inside the top edge.
-   They used to sit at `top: -5px`, overhanging the element — which made them
-   collide with whatever was above (list gaps, the header's border, the brick
-   above in the tray). Inside the brick they cannot overlap anything, and the
-   reserved padding means they never sit on top of the label either. */
+  /* ── Panels ── */
 
-  .brick-studs::before {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 10px;
-    right: 10px;
-    height: 7px;
-    background-image:
-      radial-gradient(
-        circle at 50% 60%,
-        rgba(0, 0, 0, 0.22) 0,
-        rgba(0, 0, 0, 0.22) 3.2px,
-        transparent 3.6px
-      ),
-      radial-gradient(
-        circle at 50% 40%,
-        rgba(255, 255, 255, 0.4) 0,
-        rgba(255, 255, 255, 0.4) 3.2px,
-        transparent 3.6px
-      );
-    background-size: 17px 7px;
-    background-repeat: repeat-x;
-    pointer-events: none;
+  .panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
   }
 
-  /* ── The GO brick ──────────────────────────────────────────────────── */
+  /* ── The canvas backdrop ──
+       A flat dot grid. It says "baseplate" without pretending to be lit. */
 
-  .go-brick {
+  .plate-grid {
+    background-color: var(--color-paper-sunken);
+    background-image: radial-gradient(
+      circle at center,
+      rgba(20, 26, 36, 0.07) 0,
+      rgba(20, 26, 36, 0.07) 2px,
+      transparent 2.4px
+    );
+    background-size: 24px 24px;
+  }
+
+  /* ── Build rail ── */
+
+  .step {
+    background: var(--color-paper-sunken);
+    color: var(--color-slate);
+    border-radius: 10px;
+    transition:
+      background-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .step-active {
+    background: var(--color-brick-blue);
+    color: #fff;
+  }
+
+  .step-done {
     background: var(--color-brick-green);
-    letter-spacing: 0.06em;
+    color: #fff;
   }
 
-  .go-brick-waiting {
-    background: var(--color-plate-sunken);
-    color: var(--color-ink-faint);
-  }
-
-  .go-brick-stop {
+  .step-failed {
     background: var(--color-brick-red);
+    color: #fff;
   }
+}
 
-  @keyframes brick-bob {
-    0%,
-    100% {
-      box-shadow:
-        inset 0 -4px 0 0 rgba(0, 0, 0, 0.26),
-        inset 0 2px 0 0 rgba(255, 255, 255, 0.3),
-        0 3px 0 0 rgba(22, 32, 46, 0.22);
-    }
-    50% {
-      box-shadow:
-        inset 0 -4px 0 0 rgba(0, 0, 0, 0.26),
-        inset 0 2px 0 0 rgba(255, 255, 255, 0.3),
-        0 6px 0 0 rgba(22, 32, 46, 0.18),
-        0 0 0 4px rgba(20, 122, 52, 0.22);
-    }
+/* ── The one motion moment ─────────────────────────────────────────────
+   The home page's brick stack assembles itself once, in the product's own
+   gesture. Nothing else on the page moves unless a person asks it to. */
+
+@keyframes snap-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-
-  .animate-brick-bob {
-    animation: brick-bob 2.4s ease-in-out infinite;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-} /* @layer components */
-
-/* ── Build rail plates ─────────────────────────────────────────────── */
-
-.rail-plate {
-  background: var(--color-plate-sunken);
-  color: var(--color-ink-soft);
-  border-radius: 8px;
-  box-shadow: inset 0 2px 0 0 rgba(22, 32, 46, 0.06);
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
 }
 
-.rail-plate-active {
-  background: var(--color-brick-blue);
-  color: #fff;
-  box-shadow:
-    inset 0 -3px 0 0 rgba(0, 0, 0, 0.24),
-    inset 0 2px 0 0 rgba(255, 255, 255, 0.25);
+.snap-in {
+  animation: snap-down 0.26s cubic-bezier(0.22, 1.4, 0.5, 1) both;
 }
 
-.rail-plate-done {
-  background: var(--color-brick-green);
-  color: #fff;
-  box-shadow:
-    inset 0 -3px 0 0 rgba(0, 0, 0, 0.24),
-    inset 0 2px 0 0 rgba(255, 255, 255, 0.25);
-}
-
-.rail-plate-failed {
-  background: var(--color-brick-red);
-  color: #fff;
-}
-
-/* ── Gradient text, for the wordmark only ──────────────────────────── */
-
-.brick-wordmark {
-  background: linear-gradient(
-    135deg,
-    var(--color-brick-red) 0%,
-    var(--color-brick-amber) 45%,
-    var(--color-accent-sun) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+@media (prefers-reduced-motion: reduce) {
+  .snap-in {
+    animation: none;
+  }
+  .brick,
+  .step {
+    transition: none;
+  }
 }
 
 /* ── Scrollbars ─────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-plate-edge);
-  border-radius: 4px;
+  background: var(--color-line);
+  border-radius: 5px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-ink-faint);
-}
-
-/* ── Animations ─────────────────────────────────────────────────────── */
-
-@keyframes snap-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.animate-snap-in {
-  animation: snap-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-snap-in,
-  .animate-brick-bob {
-    animation: none;
-  }
-  .brick,
-  .rail-plate {
-    transition: none;
-  }
+  background: var(--color-slate);
 }
 
 /* ── Overlays and code ─────────────────────────────────────────────── */
 
 .modal-backdrop {
-  background: rgba(22, 32, 46, 0.42);
+  background: rgba(20, 26, 36, 0.4);
 }
 
-.terminal-panel {
-  background: #131a24;
-  color: #dce4f0;
+.code-panel {
+  background: #10151d;
+  color: #dfe6f0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Blockly overrides.
-   The block geometry comes from the custom `lego` renderer in
-   components/blocks/legoRenderer.ts; this is only the surrounding chrome.
+   Blockly chrome.
+
+   Block geometry comes from the `lego` renderer in
+   components/blocks/legoRenderer.ts.
+
+   Field and menu TEXT COLOURS are deliberately absent from this file. Blockly's
+   renderer generates its own stylesheet and injects it at inject() time — after
+   this one — forcing .blocklyDropdownText white with !important and setting
+   color:#fff on .blocklyMenuItemContent. Neither can be beaten from here: the
+   first outranks us, the second sits on a child element. Both are corrected in
+   getCSS_ in legoRenderer.ts. Rules added here would look right in review and
+   quietly do nothing.
    ═══════════════════════════════════════════════════════════════════════ */
 
 .blocklyMainBackground {
@@ -423,8 +292,6 @@
   stroke: none !important;
 }
 
-/* The studio supplies the studded baseplate behind the canvas, so Blockly's own
-   grid would double up on it. */
 .blocklyGridLine {
   stroke: transparent !important;
 }
@@ -434,39 +301,27 @@
 }
 
 .blocklyScrollbarHandle {
-  fill: var(--color-plate-edge) !important;
+  fill: var(--color-line) !important;
 }
 
-/* Blockly paints every block's text with one colour, so the palette is chosen to
-   keep white legible on all of it. Editable fields are the exception: they get a
-   white tile, so their text has to flip to dark. */
 .blocklyText {
   font-family: var(--font-body) !important;
   font-weight: 600 !important;
   fill: #ffffff !important;
 }
 
-/* Field and menu TEXT COLOURS are deliberately absent from this file.
-
-   Blockly's renderer generates its own stylesheet and injects it at inject()
-   time — after this one — including a rule forcing .blocklyDropdownText to fill
-   #fff with !important, and a color: #fff on .blocklyMenuItemContent. Neither can
-   be beaten from here: the first outranks us on !important plus specificity, and
-   the second sits on a child element, so a rule on .blocklyMenuItem never reaches
-   it. Both are corrected in getCSS_ in components/blocks/legoRenderer.ts, which
-   is appended to Blockly's own sheet.
-
-   Rules added here would look right in review and quietly do nothing. */
-
 /* The white tile a child types into or picks from. */
 .blocklyFieldRect {
   fill: #ffffff !important;
-  stroke: rgba(0, 0, 0, 0.18) !important;
+  stroke: rgba(20, 26, 36, 0.18) !important;
   stroke-width: 1px !important;
 }
 
-/* The options list. Left alone it inherits browser defaults and looks nothing
-   like the rest of the toybox. */
+.blocklyHtmlInput {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+}
+
 .blocklyMenuItem {
   font-family: var(--font-body) !important;
   font-weight: 600 !important;
@@ -474,23 +329,19 @@
 
 .blocklyMenuItemSelected,
 .blocklyMenuItemHighlight {
-  background-color: var(--color-plate-hover) !important;
+  background-color: var(--color-paper-sunken) !important;
 }
 
 .blocklyDropDownDiv {
   background-color: #ffffff !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(20, 26, 36, 0.12) !important;
 }
 
 .blocklyDropDownArrow {
   background-color: #ffffff !important;
-  border-color: var(--color-plate-edge) !important;
-}
-
-/* While editing, the HTML input sits over the tile — match it so nothing jumps. */
-.blocklyHtmlInput {
-  font-family: var(--font-body) !important;
-  font-weight: 600 !important;
-  color: var(--color-ink) !important;
+  border-color: var(--color-line) !important;
 }
 
 .blocklyWidgetDiv,
@@ -498,18 +349,20 @@
   font-family: var(--font-body) !important;
 }
 
-.blocklyDropDownDiv {
-  border: 2px solid var(--color-plate-edge) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 4px 0 0 var(--color-plate-edge) !important;
-}
-
 .blocklyTrash image,
 .blocklyZoom > image {
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
-.blocklyZoom > image:hover,
-.blocklyTrash:hover image {
-  opacity: 0.8;
+.blocklyTrash:hover image,
+.blocklyZoom > image:hover {
+  opacity: 0.75;
+}
+
+/* Visual highlight when dragging a brick over a target block on the canvas */
+.lamine-drop-target > path {
+  filter: drop-shadow(0 0 10px rgba(18, 80, 216, 0.85)) brightness(1.15) !important;
+  stroke: #ffffff !important;
+  stroke-width: 2.5px !important;
+  transition: stroke 0.15s ease, filter 0.15s ease;
 }

@@ -5,7 +5,8 @@ import "./globals.css"
 import { ConvexClientProvider } from "@/components/convex-client-provider"
 import { cn } from "@/lib/utils"
 
-/* elisa's type stack: Fredoka for display, Outfit for body, JetBrains for code. */
+/* Fredoka for display, Outfit for body, JetBrains for code. Rounded and warm,
+   picked for readers aged 8-14 rather than for a dashboard. */
 const fredoka = Fredoka({
   subsets: ["latin"],
   weight: ["500", "600", "700"],

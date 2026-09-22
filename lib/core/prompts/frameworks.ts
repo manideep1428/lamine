@@ -1,8 +1,7 @@
 /**
  * Framework guidance for builder agents.
  *
- * Ported and trimmed from elisa's `backend/src/prompts/frameworks.ts`. Two
- * things carry over that are easy to underestimate:
+ * Two things here are easy to underestimate:
  *
  *  1. The multi-file rule. Agents run one after another over a shared
  *     filesystem; if two write the same file, one silently loses. Every feature

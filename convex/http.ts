@@ -1,8 +1,9 @@
+import { registerStaticRoutes } from "@convex-dev/static-hosting"
 import { httpRouter } from "convex/server"
 
 import { exportFileName, resolveRequestedPath } from "../lib/core/publishing"
 import { buildZip } from "../lib/core/zip"
-import { internal } from "./_generated/api"
+import { components, internal } from "./_generated/api"
 import type { Id } from "./_generated/dataModel"
 import { httpAction } from "./_generated/server"
 
@@ -116,5 +117,20 @@ const exportZip = httpAction(async (ctx, request) => {
 })
 
 http.route({ path: "/export", method: "GET", handler: exportZip })
+
+/* ════════════════════════════════════════════════════════════════════════
+   The studio itself
+   ════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Serve the exported Next app from this same deployment.
+ *
+ * Registered last, and deliberately using the component's app-owned routing mode
+ * rather than letting it own the root: `/p/` and `/export` above are URLs that
+ * published projects and download links already point at, and the component's
+ * docs are explicit that exact routes win over its catch-all. Our routes keep
+ * their addresses; everything else falls through to the static site.
+ */
+registerStaticRoutes(http, components.staticHosting)
 
 export default http

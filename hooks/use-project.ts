@@ -6,7 +6,7 @@
  * localStorage is the fast copy — written on every block change, works offline,
  * zero latency. Convex is the real copy — debounced, and the only one that can
  * run a build. On load we take whichever is newer, which covers the tab that
- * closed mid-sync (PLAN.md §3).
+ * closed mid-sync (ARCHITECTURE.md §3).
  *
  * Nothing here copies external state into React state. The local copy arrives
  * through `useSyncExternalStore`, the remote copy through a Convex subscription,

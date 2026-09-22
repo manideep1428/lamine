@@ -137,9 +137,8 @@ export function topoSort(tasks: readonly PlanTask[]): PlanTask[] {
 /**
  * Clamp what can be clamped, reject what cannot.
  *
- * Mirrors elisa's `metaPlanner.validate()`: descriptions capped, illegal paths
- * filtered out, every reference resolved. Unlike elisa we do not need the JSON
- * repair step — Structured Outputs handles the shape.
+ * Descriptions capped, illegal paths filtered out, every reference resolved.
+ * No JSON repair step is needed: Structured Outputs already guarantees the shape.
  */
 export function validatePlan(input: BuildPlan): ValidationResult {
   const errors: string[] = []
@@ -274,7 +273,7 @@ export function validatePlan(input: BuildPlan): ValidationResult {
   }
 
   /* ── one file, one owner ──
-     elisa's hardest-won rule: two agents writing the same file means one
+     The rule that matters most here: two agents writing the same file means one
      silently overwrites the other. Warn loudly; the builder prompt repeats it. */
   const owners = new Map<string, string[]>()
   for (const t of tasks) {

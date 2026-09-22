@@ -1,9 +1,7 @@
 /**
  * NuggetSpec — the contract between the kid's blocks and the build agents.
  *
- * Trimmed from elisa's `backend/src/utils/specValidator.ts`: hardware, portals,
- * devices, composition and runtime are gone. Everything that survives keeps
- * elisa's discipline of capping every string and array, because this data is
+ * Every string and array is capped, because this data is
  * written by a child and then interpolated into agent prompts.
  *
  * Pure module. No Convex, no Blockly, no DOM — importable from anywhere.

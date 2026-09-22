@@ -3,8 +3,8 @@
 /**
  * Phase 1 — plan. NuggetSpec → a validated task DAG.
  *
- * elisa asks for JSON and repairs the answer. We use Structured Outputs, so the
- * shape is guaranteed at decode time and the repair code is unnecessary.
+ * Structured Outputs guarantees the shape at decode time, so there is no JSON
+ * repair step: no fence stripping, no slicing from the first brace, no retry.
  * `validatePlan` still checks the meaning: dangling deps, cycles, path escapes.
  */
 
