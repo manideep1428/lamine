@@ -1,15 +1,41 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
+import type { Metadata, Viewport } from "next"
+import { Fredoka, JetBrains_Mono, Outfit } from "next/font/google"
 
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
+import { ConvexClientProvider } from "@/components/convex-client-provider"
+import { cn } from "@/lib/utils"
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
+/* elisa's type stack: Fredoka for display, Outfit for body, JetBrains for code. */
+const fredoka = Fredoka({
   subsets: ["latin"],
-  variable: "--font-mono",
+  weight: ["500", "600", "700"],
+  variable: "--font-fredoka",
+  display: "swap",
 })
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+})
+
+export const metadata: Metadata = {
+  title: "Lamine — build websites and games with blocks",
+  description:
+    "Snap blocks together to describe what you want, then watch your helpers build a real website or game you can play.",
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#faf7f4",
+}
 
 export default function RootLayout({
   children,
@@ -19,11 +45,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
+      className={cn(
+        "antialiased",
+        fredoka.variable,
+        outfit.variable,
+        jetbrains.variable
+      )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>
     </html>
   )

@@ -1,0 +1,9 @@
+# E2B template config. The CLI adds `template_id` and `team_id` on the first
+# successful build — commit those lines when they appear so every environment
+# builds the same template.
+template_name = "lamine-web"
+dockerfile = "e2b.Dockerfile"
+
+# Deliberately no start_cmd. The preview server is started per build by
+# `startPreview` in convex/lib/sandbox.ts, after the agents have written files —
+# a server baked into the snapshot would come up pointing at an empty folder.

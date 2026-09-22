@@ -4,126 +4,512 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ═══════════════════════════════════════════════════════════════════════
+   LAMINE DESIGN SYSTEM — BRICKS
+   A studded, tactile language: cool grey baseplate, saturated bricks, hard
+   offset shadows instead of soft glass. Deliberately not elisa's warm atelier
+   palette — same block set, different toybox.
+
+   Two rules:
+   · Saturation belongs to the bricks. The chrome stays grey so the canvas reads.
+   · Shadows are offset, never blurred. Blur reads as glass; offset reads as a
+     physical thing sitting on a plate.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── The baseplate (cool neutral) ── */
+  --color-plate-deep: #e7ecf3;
+  --color-plate: #eef2f7;
+  --color-plate-raised: #ffffff;
+  --color-plate-sunken: #dde4ee;
+  --color-plate-edge: #c3cddc;
+  --color-plate-hover: #e2e9f2;
+
+  /* ── Ink ── */
+  --color-ink: #16202e;
+  --color-ink-soft: #55637a;
+  --color-ink-faint: #8b97a9;
+
+  /* ── Bricks. Dark enough that white text on them is legible, because Blockly
+       paints every block's text one single colour. ── */
+  --color-brick-red: #b81217;
+  --color-brick-amber: #8f5f02;
+  --color-brick-green: #147a34;
+  --color-brick-teal: #0b6e78;
+  --color-brick-blue: #0b52bd;
+  --color-brick-purple: #6a2fb0;
+
+  /* Darker edges, for the moulded lip. */
+  --color-edge-red: #7d0a0e;
+  --color-edge-amber: #634101;
+  --color-edge-green: #0d5222;
+  --color-edge-teal: #074a52;
+  --color-edge-blue: #073a86;
+  --color-edge-purple: #4a1f7d;
+
+  /* ── Bright accents. Highlights and dots only — never behind text. ── */
+  --color-accent-sun: #f6c31c;
+  --color-accent-lime: #37c65d;
+  --color-accent-sky: #3f9bf5;
+
+  /* ── Fonts (wired up in app/layout.tsx via next/font) ── */
+  --font-display: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
+  --font-body: var(--font-outfit), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  --font-heading: var(--font-display);
+  --font-sans: var(--font-body);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
 }
 
+/* shadcn tokens remapped onto the brick palette, so any shadcn component we
+   drop in already belongs here. */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+  --background: #eef2f7;
+  --foreground: #16202e;
+  --card: #ffffff;
+  --card-foreground: #16202e;
+  --popover: #ffffff;
+  --popover-foreground: #16202e;
+  --primary: #0b52bd;
+  --primary-foreground: #ffffff;
+  --secondary: #dde4ee;
+  --secondary-foreground: #16202e;
+  --muted: #e7ecf3;
+  --muted-foreground: #55637a;
+  --accent: #e2e9f2;
+  --accent-foreground: #16202e;
+  --destructive: #b81217;
+  --border: #c3cddc;
+  --input: #c3cddc;
+  --ring: rgba(11, 82, 189, 0.4);
+  --radius: 0.75rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #16202e;
+  --sidebar-primary: #0b52bd;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e2e9f2;
+  --sidebar-accent-foreground: #16202e;
+  --sidebar-border: #c3cddc;
+  --sidebar-ring: rgba(11, 82, 189, 0.4);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
-  body {
-    @apply bg-background text-foreground;
-    }
+  }
   html {
-    @apply font-sans;
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background: var(--color-plate);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    margin: 0;
+  }
+  /* The studio is a fixed-viewport app shell, so it opts out of scrolling. */
+  body[data-shell="studio"] {
+    overflow: hidden;
+  }
+}
+
+/* ── The baseplate ────────────────────────────────────────────────────
+   Studs, drawn once as a repeating radial gradient. This is the single
+   strongest signal of the whole language, and it costs no DOM. */
+
+.baseplate {
+  background-color: var(--color-plate);
+  background-image: radial-gradient(
+    circle at center,
+    rgba(22, 32, 46, 0.075) 0,
+    rgba(22, 32, 46, 0.075) 5px,
+    transparent 5.5px
+  );
+  background-size: 28px 28px;
+  background-position: 8px 8px;
+}
+
+.baseplate-deep {
+  background-color: var(--color-plate-deep);
+  background-image: radial-gradient(
+    circle at center,
+    rgba(22, 32, 46, 0.055) 0,
+    rgba(22, 32, 46, 0.055) 5px,
+    transparent 5.5px
+  );
+  background-size: 28px 28px;
+  background-position: 8px 8px;
+}
+
+/* ── Plates and bricks ───────────────────────────────────────────────────
+   Everything from here to the end of the section lives in @layer components ON
+   PURPOSE. Unlayered CSS beats Tailwind's utilities, which meant
+   `plate-flat border-y-0` silently kept all four borders. Inside the components
+   layer a utility always wins — which is what a reader expects when they add one.
+   ── */
+
+@layer components {
+  .plate {
+    background: var(--color-plate-raised);
+    border: 2px solid var(--color-plate-edge);
+    border-radius: 12px;
+    box-shadow: 0 3px 0 0 var(--color-plate-edge);
+  }
+
+  .plate-flat {
+    background: var(--color-plate-raised);
+    border: 2px solid var(--color-plate-edge);
+  }
+
+  /* ── Bricks: the interactive things. ─────────────────────────────────── */
+
+  .brick {
+    position: relative;
+    border-radius: 10px;
+    border: none;
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 600;
+    /* The lip underneath is what makes it read as moulded plastic. */
+    box-shadow:
+      inset 0 -4px 0 0 rgba(0, 0, 0, 0.26),
+      inset 0 2px 0 0 rgba(255, 255, 255, 0.3),
+      0 3px 0 0 rgba(22, 32, 46, 0.22);
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease,
+      filter 0.12s ease;
+  }
+
+  .brick:hover:not(:disabled) {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 -4px 0 0 rgba(0, 0, 0, 0.26),
+      inset 0 2px 0 0 rgba(255, 255, 255, 0.3),
+      0 4px 0 0 rgba(22, 32, 46, 0.22);
+  }
+
+  /* Pressing a brick pushes it into the plate. */
+  .brick:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow:
+      inset 0 -2px 0 0 rgba(0, 0, 0, 0.26),
+      inset 0 2px 0 0 rgba(255, 255, 255, 0.25),
+      0 0 0 0 rgba(22, 32, 46, 0.22);
+  }
+
+  .brick:disabled {
+    background: var(--color-plate-sunken) !important;
+    color: var(--color-ink-faint);
+    box-shadow: inset 0 -3px 0 0 rgba(0, 0, 0, 0.08);
+    cursor: not-allowed;
+  }
+
+  /* Studs, drawn inside the top edge.
+   They used to sit at `top: -5px`, overhanging the element — which made them
+   collide with whatever was above (list gaps, the header's border, the brick
+   above in the tray). Inside the brick they cannot overlap anything, and the
+   reserved padding means they never sit on top of the label either. */
+
+  .brick-studs::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    right: 10px;
+    height: 7px;
+    background-image:
+      radial-gradient(
+        circle at 50% 60%,
+        rgba(0, 0, 0, 0.22) 0,
+        rgba(0, 0, 0, 0.22) 3.2px,
+        transparent 3.6px
+      ),
+      radial-gradient(
+        circle at 50% 40%,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0.4) 3.2px,
+        transparent 3.6px
+      );
+    background-size: 17px 7px;
+    background-repeat: repeat-x;
+    pointer-events: none;
+  }
+
+  /* ── The GO brick ──────────────────────────────────────────────────── */
+
+  .go-brick {
+    background: var(--color-brick-green);
+    letter-spacing: 0.06em;
+  }
+
+  .go-brick-waiting {
+    background: var(--color-plate-sunken);
+    color: var(--color-ink-faint);
+  }
+
+  .go-brick-stop {
+    background: var(--color-brick-red);
+  }
+
+  @keyframes brick-bob {
+    0%,
+    100% {
+      box-shadow:
+        inset 0 -4px 0 0 rgba(0, 0, 0, 0.26),
+        inset 0 2px 0 0 rgba(255, 255, 255, 0.3),
+        0 3px 0 0 rgba(22, 32, 46, 0.22);
     }
+    50% {
+      box-shadow:
+        inset 0 -4px 0 0 rgba(0, 0, 0, 0.26),
+        inset 0 2px 0 0 rgba(255, 255, 255, 0.3),
+        0 6px 0 0 rgba(22, 32, 46, 0.18),
+        0 0 0 4px rgba(20, 122, 52, 0.22);
+    }
+  }
+
+  .animate-brick-bob {
+    animation: brick-bob 2.4s ease-in-out infinite;
+  }
+} /* @layer components */
+
+/* ── Build rail plates ─────────────────────────────────────────────── */
+
+.rail-plate {
+  background: var(--color-plate-sunken);
+  color: var(--color-ink-soft);
+  border-radius: 8px;
+  box-shadow: inset 0 2px 0 0 rgba(22, 32, 46, 0.06);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.rail-plate-active {
+  background: var(--color-brick-blue);
+  color: #fff;
+  box-shadow:
+    inset 0 -3px 0 0 rgba(0, 0, 0, 0.24),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.25);
+}
+
+.rail-plate-done {
+  background: var(--color-brick-green);
+  color: #fff;
+  box-shadow:
+    inset 0 -3px 0 0 rgba(0, 0, 0, 0.24),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.25);
+}
+
+.rail-plate-failed {
+  background: var(--color-brick-red);
+  color: #fff;
+}
+
+/* ── Gradient text, for the wordmark only ──────────────────────────── */
+
+.brick-wordmark {
+  background: linear-gradient(
+    135deg,
+    var(--color-brick-red) 0%,
+    var(--color-brick-amber) 45%,
+    var(--color-accent-sun) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-plate-edge);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-faint);
+}
+
+/* ── Animations ─────────────────────────────────────────────────────── */
+
+@keyframes snap-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-snap-in {
+  animation: snap-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-snap-in,
+  .animate-brick-bob {
+    animation: none;
+  }
+  .brick,
+  .rail-plate {
+    transition: none;
+  }
+}
+
+/* ── Overlays and code ─────────────────────────────────────────────── */
+
+.modal-backdrop {
+  background: rgba(22, 32, 46, 0.42);
+}
+
+.terminal-panel {
+  background: #131a24;
+  color: #dce4f0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Blockly overrides.
+   The block geometry comes from the custom `lego` renderer in
+   components/blocks/legoRenderer.ts; this is only the surrounding chrome.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.blocklyMainBackground {
+  fill: transparent !important;
+  stroke: none !important;
+}
+
+/* The studio supplies the studded baseplate behind the canvas, so Blockly's own
+   grid would double up on it. */
+.blocklyGridLine {
+  stroke: transparent !important;
+}
+
+.blocklyScrollbarBackground {
+  fill: transparent !important;
+}
+
+.blocklyScrollbarHandle {
+  fill: var(--color-plate-edge) !important;
+}
+
+/* Blockly paints every block's text with one colour, so the palette is chosen to
+   keep white legible on all of it. Editable fields are the exception: they get a
+   white tile, so their text has to flip to dark. */
+.blocklyText {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  fill: #ffffff !important;
+}
+
+/* Field and menu TEXT COLOURS are deliberately absent from this file.
+
+   Blockly's renderer generates its own stylesheet and injects it at inject()
+   time — after this one — including a rule forcing .blocklyDropdownText to fill
+   #fff with !important, and a color: #fff on .blocklyMenuItemContent. Neither can
+   be beaten from here: the first outranks us on !important plus specificity, and
+   the second sits on a child element, so a rule on .blocklyMenuItem never reaches
+   it. Both are corrected in getCSS_ in components/blocks/legoRenderer.ts, which
+   is appended to Blockly's own sheet.
+
+   Rules added here would look right in review and quietly do nothing. */
+
+/* The white tile a child types into or picks from. */
+.blocklyFieldRect {
+  fill: #ffffff !important;
+  stroke: rgba(0, 0, 0, 0.18) !important;
+  stroke-width: 1px !important;
+}
+
+/* The options list. Left alone it inherits browser defaults and looks nothing
+   like the rest of the toybox. */
+.blocklyMenuItem {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+}
+
+.blocklyMenuItemSelected,
+.blocklyMenuItemHighlight {
+  background-color: var(--color-plate-hover) !important;
+}
+
+.blocklyDropDownDiv {
+  background-color: #ffffff !important;
+}
+
+.blocklyDropDownArrow {
+  background-color: #ffffff !important;
+  border-color: var(--color-plate-edge) !important;
+}
+
+/* While editing, the HTML input sits over the tile — match it so nothing jumps. */
+.blocklyHtmlInput {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  color: var(--color-ink) !important;
+}
+
+.blocklyWidgetDiv,
+.blocklyDropDownDiv {
+  font-family: var(--font-body) !important;
+}
+
+.blocklyDropDownDiv {
+  border: 2px solid var(--color-plate-edge) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 0 0 var(--color-plate-edge) !important;
+}
+
+.blocklyTrash image,
+.blocklyZoom > image {
+  opacity: 0.45;
+}
+
+.blocklyZoom > image:hover,
+.blocklyTrash:hover image {
+  opacity: 0.8;
 }

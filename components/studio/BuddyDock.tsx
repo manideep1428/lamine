@@ -1,0 +1,293 @@
+"use client"
+
+import { Mic, MicOff, Send } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+
+import type { Doc } from "@/convex/_generated/dataModel"
+import { BUDDY_LOOK, isBuddy, type BuddyId } from "@/lib/core/crew"
+import { cn } from "@/lib/utils"
+import { useListening } from "@/lib/voice"
+
+/** Which events belong in the conversation, as opposed to the raw log. */
+const STORY_KINDS = new Set(["narrator", "teaching", "agent_output"])
+
+/** The brick each buddy wears. */
+const BUDDY_BRICK: Record<BuddyId, string> = {
+  codey: "bg-brick-blue",
+  pixel: "bg-brick-purple",
+  drbug: "bg-brick-red",
+}
+
+const MOOD_TINT: Record<string, string> = {
+  excited: "border-brick-blue/40",
+  encouraging: "border-brick-green/40",
+  concerned: "border-brick-red/40",
+  celebrating: "border-accent-sun/70",
+}
+
+interface FeedItem {
+  id: string
+  at: number
+  who: string
+  mood?: string
+  text: string
+}
+
+interface BuddyDockProps {
+  events: Doc<"events">[]
+  messages: Doc<"messages">[]
+  planning: boolean
+  onSend: (text: string) => void
+  sending: boolean
+  say: (text: string, who?: string) => void
+  voiceOn: boolean
+}
+
+/**
+ * The three helpers, and what they are doing right now.
+ *
+ * The feed is fed by the `events` table during a build, so the buddies narrate
+ * real tool calls rather than canned lines; `messages` carries the conversation a
+ * child starts. Both are merged by time, because from a child's point of view
+ * they are one conversation.
+ */
+export function BuddyDock({
+  events,
+  messages,
+  planning,
+  onSend,
+  sending,
+  say,
+  voiceOn,
+}: BuddyDockProps) {
+  const [showRaw, setShowRaw] = useState(false)
+  const [draft, setDraft] = useState("")
+  const scroller = useRef<HTMLDivElement>(null)
+  const spoken = useRef(new Set<string>())
+
+  const listening = useListening((heard) =>
+    setDraft((was) => `${was} ${heard}`.trim())
+  )
+
+  const story = useMemo<FeedItem[]>(() => {
+    const fromEvents = events
+      .filter((e) => STORY_KINDS.has(e.kind))
+      .map((e) => ({
+        id: e._id,
+        at: e._creationTime,
+        who: e.who ?? "codey",
+        mood: e.mood,
+        text: e.text,
+      }))
+    const fromChat = messages.map((m) => ({
+      id: m._id,
+      at: m._creationTime,
+      who: m.who,
+      mood: m.mood,
+      text: m.text,
+    }))
+    return [...fromEvents, ...fromChat].sort((a, b) => a.at - b.at)
+  }, [events, messages])
+
+  const raw = useMemo(
+    () => events.filter((e) => !STORY_KINDS.has(e.kind)),
+    [events]
+  )
+
+  /** Who said something most recently — their chip lights up. */
+  const talking = story.at(-1)?.who
+
+  useEffect(() => {
+    const node = scroller.current
+    if (node) node.scrollTop = node.scrollHeight
+  }, [story.length, raw.length, showRaw])
+
+  useEffect(() => {
+    if (!voiceOn) return
+    const latest = story.at(-1)
+    if (!latest || latest.who === "kid" || spoken.current.has(latest.id)) return
+    spoken.current.add(latest.id)
+    say(latest.text, latest.who)
+  }, [story, say, voiceOn])
+
+  const submit = () => {
+    const text = draft.trim()
+    if (!text || sending) return
+    setDraft("")
+    onSend(text)
+  }
+
+  return (
+    <aside
+      className="plate-flat flex w-80 shrink-0 flex-col border-y-0 border-r-0"
+      aria-label="Your helpers"
+    >
+      {/* The crew, as three bricks. */}
+      <div className="flex items-center gap-1.5 border-b-2 border-plate-edge p-2">
+        {(Object.keys(BUDDY_LOOK) as BuddyId[]).map((id) => (
+          <span
+            key={id}
+            className={cn(
+              "brick flex flex-1 items-center justify-center gap-1 px-2 pt-3.5 pb-1.5 text-[11px] transition-opacity",
+              BUDDY_BRICK[id],
+              talking === id ? "brick-studs opacity-100" : "opacity-55"
+            )}
+            title={BUDDY_LOOK[id].name}
+          >
+            <span aria-hidden>{BUDDY_LOOK[id].emoji}</span>
+            <span className="truncate">{BUDDY_LOOK[id].name}</span>
+          </span>
+        ))}
+      </div>
+
+      <div
+        ref={scroller}
+        className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3"
+        aria-live="polite"
+      >
+        {showRaw ? (
+          raw.length === 0 ? (
+            <p className="py-6 text-center text-[13px] text-ink-faint">
+              Every tool call and test result lands here while a build runs.
+            </p>
+          ) : (
+            <ul className="space-y-1 font-mono text-[11px] leading-relaxed text-ink-soft">
+              {raw.map((event) => (
+                <li key={event._id} className="flex gap-2">
+                  <span className="shrink-0 text-ink-faint">
+                    {event.kind === "error"
+                      ? "!"
+                      : event.kind === "test_result"
+                        ? "·"
+                        : ">"}
+                  </span>
+                  <span
+                    className={cn(
+                      "break-all",
+                      event.kind === "error" && "text-brick-red"
+                    )}
+                  >
+                    {event.text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )
+        ) : story.length === 0 ? (
+          <p className="py-6 text-center text-[13px] leading-snug text-ink-faint">
+            {planning
+              ? "Codey is reading your bricks…"
+              : "Snap some bricks together, then press GO! Your helpers will talk to you here."}
+          </p>
+        ) : (
+          story.map((item) => <Bubble key={item.id} item={item} />)
+        )}
+      </div>
+
+      <div className="border-t-2 border-plate-edge p-2">
+        <form
+          className="flex items-center gap-1"
+          onSubmit={(event) => {
+            event.preventDefault()
+            submit()
+          }}
+        >
+          <label className="sr-only" htmlFor="buddy-input">
+            Ask your helpers something
+          </label>
+          <input
+            id="buddy-input"
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            placeholder="Ask your helpers…"
+            maxLength={600}
+            className="min-w-0 flex-1 rounded-lg border-2 border-plate-edge bg-plate px-2.5 py-1.5 text-[13px] outline-none focus:border-brick-blue"
+          />
+          {listening.supported ? (
+            <button
+              type="button"
+              onClick={() =>
+                listening.listening ? listening.stop() : listening.start()
+              }
+              aria-pressed={listening.listening}
+              title={listening.listening ? "Stop listening" : "Say it out loud"}
+              className={cn(
+                "rounded-lg p-2",
+                listening.listening
+                  ? "bg-brick-red text-white"
+                  : "text-ink-faint hover:bg-plate-hover hover:text-ink-soft"
+              )}
+            >
+              {listening.listening ? (
+                <Mic className="size-4" />
+              ) : (
+                <MicOff className="size-4" />
+              )}
+              <span className="sr-only">
+                {listening.listening ? "Listening" : "Use the microphone"}
+              </span>
+            </button>
+          ) : null}
+          <button
+            type="submit"
+            disabled={!draft.trim() || sending}
+            className="brick bg-brick-blue px-2.5 py-2 disabled:opacity-50"
+          >
+            <Send className="size-4" />
+            <span className="sr-only">Send</span>
+          </button>
+        </form>
+
+        <button
+          type="button"
+          onClick={() => setShowRaw((was) => !was)}
+          className="mt-1.5 w-full text-center text-[11px] text-ink-faint hover:text-ink-soft"
+        >
+          {showRaw ? "back to the story" : "show me the raw tool calls"}
+        </button>
+      </div>
+    </aside>
+  )
+}
+
+function Bubble({ item }: { item: FeedItem }) {
+  if (item.who === "kid") {
+    return (
+      <div className="flex justify-end">
+        <p className="max-w-[85%] rounded-xl rounded-br-sm border-2 border-plate-edge bg-plate px-3 py-1.5 text-[13px] text-ink">
+          {item.text}
+        </p>
+      </div>
+    )
+  }
+
+  const who: BuddyId = isBuddy(item.who) ? item.who : "codey"
+  const look = BUDDY_LOOK[who]
+
+  return (
+    <div className="animate-snap-in flex items-start gap-2">
+      <span
+        className={cn(
+          "grid size-7 shrink-0 place-items-center rounded-lg text-sm",
+          BUDDY_BRICK[who]
+        )}
+        aria-hidden
+      >
+        {look.emoji}
+      </span>
+      <div
+        className={cn(
+          "min-w-0 flex-1 rounded-xl rounded-tl-sm border-2 bg-plate-raised px-3 py-1.5",
+          MOOD_TINT[item.mood ?? "encouraging"] ?? "border-plate-edge"
+        )}
+      >
+        <p className="text-[10px] font-bold tracking-wide text-ink-faint uppercase">
+          {look.name}
+        </p>
+        <p className="text-[13px] leading-snug break-words whitespace-pre-wrap text-ink">
+          {item.text}
+        </p>
+      </div>
+    </div>
+  )
+}
