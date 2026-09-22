@@ -3,7 +3,7 @@
 - **Project:** lamine
 - **Event:** Convex All Gas Hackathon
 - **Challenge:** Build a new full-stack app: Convex runs it, Firecrawl feeds it data, AgentMail gives it an inbox. Use Codex or any agent with the Convex plugin. Three weeks to ship something people can use.
-- **What it does:** Children aged 8-14 snap bricks that describe a game or website, then AI agents write the real code in a sandbox and hand it back playable in the browser.
+- **What it does:** Children aged 8-14 snap bricks that describe a game, a website or something wired to an ESP32, then AI agents write the real code in a sandbox and hand it back playable in the browser or ready to upload.
 - **Live app:** https://glad-curlew-471.convex.site
 - **Repo:** none
 - **Frontend:** Convex static hosting
@@ -13,7 +13,7 @@
 - **Auth:** none
 - **AI models:** gpt-5.6-luna
 - **Started:** 2026-09-22T05:05:26Z
-- **Last updated:** 2026-09-22T17:25:33Z
+- **Last updated:** 2026-09-22T17:53:08Z
 
 ## Log
 
@@ -51,7 +51,7 @@ build rail, a live task DAG and the three buddies (`components/blocks/`,
 spec caps, plan validation, path enforcement, tool schemas, history trimming and
 the zip writer.
 
-### 2026-09-22 - working tree
+### 2026-09-22 - 165b2d1
 Reworked the interface after review. Removed the faked 3D (moulded studs, inset
 lips, offset shadows) for a flat palette, rebuilt the home page around a brick
 stack that explains the product by being read top to bottom, and added
@@ -106,7 +106,7 @@ the code as it actually stands: the palette section described colours the UI no
 longer uses, so the old document was both derivative and stale. Updated the eight
 source files that cited it. 232 tests still pass, which is the check that the pass
 touched only comments.
-### 2026-09-22 - working tree
+### 2026-09-22 - 7956dbb
 Added a device target, so a child can describe something physical and get an ESP32
 sketch they can upload. A new brick says what is wired to which pin, the Goal brick
 gained a "thing with a board" kind, and a board project is routed to Arduino
@@ -120,7 +120,7 @@ so the tester is told it can check structure and never claim a behaviour was
 observed, and both the planner and the builder are told never to touch a pin the
 child did not list. Compiling the sketch and flashing over Web Serial are the next
 steps, not part of this. 244 tests.
-### 2026-09-22 - working tree
+### 2026-09-22 - f4cd5b8
 Tightened the brick rules and made the home page tell the truth about what can be
 built. "Make it like" and "Make it look" are now one-per-project like Goal and
 Show it: a second copy could only overwrite the first, so the tray refuses it and
@@ -133,3 +133,30 @@ visits, keeping the three helpers visible with a dot when they have said somethi
 new. The home page hero now switches between a game, a website and a board
 project, because it described only games after the device target landed
 (`app/page.tsx`, `components/studio/BuddyDock.tsx`). 262 tests.
+
+Also covered the drop placement itself, which had none: it is the only code that
+disconnects and reconnects live Blockly connections, and getting it wrong silently
+rearranges a child's project (`components/blocks/placement.test.ts`).
+
+### 2026-09-22 - 2cecb58
+Fixed the bug that made the brick editor unusable and finished the studio's shell.
+
+Typing into the editor panel was impossible. Its inputs live outside the Blockly
+canvas, so focusing one makes Blockly let go of its selection and fire a selection
+event with a null id, which the listener turned into "nothing is selected" and
+unmounted the panel on the first click. The panel now tracks its own brick and
+closes only when that brick is binned (`components/blocks/BlockCanvas.tsx`).
+
+The plan, code and checks views showed "press GO" even while a build was running.
+Each now picks between data, a loader naming the phase that is actually running,
+and the invitation once the session settles; a view waiting on an earlier phase
+says what it is waiting for rather than spinning (`components/studio/Working.tsx`).
+
+The plan graph laid tasks left to right, so a six-step chain was 1556px wide and
+the last step was clipped. Layers run down the page now with parallel work side by
+side, which fits any pane and matches how the bricks read
+(`components/studio/TaskGraph.tsx`).
+
+Tray bricks carry icons, "What you're building" moved off the canvas into the
+right panel where it no longer covers the board, and the studio wordmark became a
+logo slot. 269 tests.
