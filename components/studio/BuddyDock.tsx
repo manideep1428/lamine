@@ -1,6 +1,12 @@
 "use client"
 
-import { Mic, MicOff, Send } from "lucide-react"
+import {
+  Mic,
+  MicOff,
+  PanelRightClose,
+  PanelRightOpen,
+  Send,
+} from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import type { Doc } from "@/convex/_generated/dataModel"
@@ -41,6 +47,11 @@ interface BuddyDockProps {
   sending: boolean
   say: (text: string, who?: string) => void
   voiceOn: boolean
+  /** Collapsed to a rail when false. */
+  open: boolean
+  onToggle: () => void
+  /** When the panel was collapsed, for counting what the child has not seen. */
+  closedAt: number | null
 }
 
 /**
@@ -50,6 +61,10 @@ interface BuddyDockProps {
  * real tool calls rather than canned lines; `messages` carries the conversation a
  * child starts. Both are merged by time, because from a child's point of view
  * they are one conversation.
+ *
+ * Collapses to a rail rather than disappearing: the canvas gets the width back,
+ * but the helpers stay visible and a dot shows when they have said something the
+ * child has not seen.
  */
 export function BuddyDock({
   events,
@@ -59,6 +74,9 @@ export function BuddyDock({
   sending,
   say,
   voiceOn,
+  open,
+  onToggle,
+  closedAt,
 }: BuddyDockProps) {
   const [showRaw, setShowRaw] = useState(false)
   const [draft, setDraft] = useState("")
@@ -117,6 +135,54 @@ export function BuddyDock({
     onSend(text)
   }
 
+  // Anything the helpers said after the panel was collapsed. Derived from a
+  // timestamp the parent sets when closing, so nothing is read or written during
+  // render and no effect has to copy state around.
+  const unseen = closedAt
+    ? story.filter((item) => item.at > closedAt).length
+    : 0
+
+  if (!open) {
+    return (
+      <aside
+        className="flex w-14 shrink-0 flex-col items-center gap-3 border-l border-line bg-surface py-3"
+        aria-label="Your helpers, collapsed"
+      >
+        <button
+          type="button"
+          onClick={onToggle}
+          title="Open your helpers"
+          className="relative rounded-lg border border-line p-1.5 text-slate hover:bg-paper-sunken hover:text-ink"
+        >
+          <PanelRightOpen className="size-4" />
+          <span className="sr-only">Open your helpers</span>
+          {unseen > 0 ? (
+            <span
+              className="absolute -top-1 -right-1 size-2.5 rounded-full bg-brick-red"
+              aria-label={`${unseen} new messages`}
+            />
+          ) : null}
+        </button>
+
+        {/* The crew stays visible, so a child never wonders where they went. */}
+        {(Object.keys(BUDDY_LOOK) as BuddyId[]).map((id) => (
+          <span
+            key={id}
+            title={BUDDY_LOOK[id].name}
+            className={cn(
+              "grid size-8 place-items-center rounded-lg text-sm",
+              BUDDY_BRICK[id],
+              talking === id ? "opacity-100" : "opacity-45"
+            )}
+          >
+            <span aria-hidden>{BUDDY_LOOK[id].emoji}</span>
+            <span className="sr-only">{BUDDY_LOOK[id].name}</span>
+          </span>
+        ))}
+      </aside>
+    )
+  }
+
   return (
     <aside
       className="flex w-80 shrink-0 flex-col border-l border-line bg-surface"
@@ -124,6 +190,15 @@ export function BuddyDock({
     >
       {/* The crew, as three bricks. */}
       <div className="flex items-center gap-1.5 border-b-2 border-line p-2">
+        <button
+          type="button"
+          onClick={onToggle}
+          title="Hide your helpers"
+          className="rounded-lg border border-line p-1.5 text-slate hover:bg-paper-sunken hover:text-ink"
+        >
+          <PanelRightClose className="size-4" />
+          <span className="sr-only">Hide your helpers</span>
+        </button>
         {(Object.keys(BUDDY_LOOK) as BuddyId[]).map((id) => (
           <span
             key={id}

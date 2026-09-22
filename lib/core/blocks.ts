@@ -48,6 +48,26 @@ export const BODY_BLOCKS: readonly string[] = [
   BLOCK.show,
 ]
 
+/**
+ * Bricks that only make sense once, and what to call them when refusing a second.
+ *
+ * Two "Make it like" bricks name two different starting points; two "Make it
+ * look" bricks name two different moods. Each of those fills a single field in
+ * the spec, so a second one can only ever overwrite the first — a silent loss of
+ * something a child deliberately chose.
+ *
+ * Blockly's connection types cannot express this: "only one of these in the
+ * stack" is a rule about meaning, not about shape. So it is enforced twice, in
+ * the two places a duplicate can appear — the tray refuses to add one, and the
+ * interpreter reports one that arrived by copy-paste or from an older project.
+ */
+export const ONE_PER_PROJECT: Record<string, string> = {
+  [BLOCK.goal]: "Make a",
+  [BLOCK.like]: "Make it like",
+  [BLOCK.style]: "Make it look",
+  [BLOCK.show]: "Show it",
+}
+
 /* ── Blockly serialization shapes (structural, not imported) ───────────── */
 
 export interface ConnectionState {
@@ -195,13 +215,18 @@ export function interpretWorkspace(
   }
 
   const body = chain(goal.next?.block)
+  const seen = new Map<string, number>()
   let sawShow = false
 
   body.forEach((block, index) => {
+    seen.set(block.type, (seen.get(block.type) ?? 0) + 1)
+
     switch (block.type) {
       case BLOCK.like: {
         const example = str(block.fields?.EXAMPLE)
-        if (example) draft.basedOn = example
+        // The first one wins. A duplicate is reported below rather than
+        // overwriting a choice the child made further up the stack.
+        if (example && !draft.basedOn) draft.basedOn = example
         break
       }
 
@@ -242,7 +267,7 @@ export function interpretWorkspace(
       case BLOCK.style: {
         const visual = str(block.fields?.VISUAL)
         const personality = str(block.fields?.PERSONALITY)
-        if (visual) {
+        if (visual && !draft.style) {
           draft.style = { visual, ...(personality ? { personality } : {}) }
         }
         break
@@ -274,6 +299,35 @@ export function interpretWorkspace(
 
   if (draft.requirements.length === 0) {
     problems.push("Add at least one 'It must…' block so I know what to build.")
+  }
+
+  // A second copy of a one-per-project brick can only overwrite the first, so it
+  // is reported rather than quietly ignored.
+  for (const [type, label] of Object.entries(ONE_PER_PROJECT)) {
+    const count = seen.get(type) ?? 0
+    if (count > 1) {
+      problems.push(
+        `You have ${count} “${label}…” bricks. Keep the one you want and bin the rest — I'll use the top one.`
+      )
+    }
+  }
+
+  // Two things wired to one pin cannot both work, and the agents would have to
+  // guess which the child meant.
+  const pinOwners = new Map<string, string>()
+  for (const part of draft.parts ?? []) {
+    if (!part.pin) {
+      problems.push(`Tell me which pin the ${part.part} is on.`)
+      continue
+    }
+    const owner = pinOwners.get(part.pin)
+    if (owner) {
+      problems.push(
+        `The ${owner} and the ${part.part} are both on pin ${part.pin}. Give each part its own pin.`
+      )
+    } else {
+      pinOwners.set(part.pin, part.part)
+    }
   }
   if (kind === "device" && (draft.parts?.length ?? 0) === 0) {
     problems.push(

@@ -24,6 +24,7 @@ import { TaskGraph } from "@/components/studio/TaskGraph"
 import { TopBar } from "@/components/studio/TopBar"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
+import { useStoredValue } from "@/hooks/use-local"
 import { useStudioProject } from "@/hooks/use-project"
 import { interpretWorkspace, type WorkspaceState } from "@/lib/core/blocks"
 import { readiness, type NuggetSpec, type SpecWarning } from "@/lib/core/spec"
@@ -66,6 +67,24 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
   const [waking, setWaking] = useState(false)
   const [sending, setSending] = useState(false)
   const [nudge, setNudge] = useState<string | null>(null)
+
+  /**
+   * The helpers panel, remembered across visits.
+   *
+   * Collapsing it gives the canvas the full width, which matters on a laptop.
+   * Stored rather than reset each visit, because it is a working preference.
+   */
+  const [helpersOpen, setHelpersOpen] = useStoredValue(
+    "lamine:helpers-open",
+    true,
+    parseFlag
+  )
+  const [helpersClosedAt, setHelpersClosedAt] = useState<number | null>(null)
+  const toggleHelpers = useCallback(() => {
+    const next = !helpersOpen
+    setHelpersOpen(next)
+    setHelpersClosedAt(next ? null : Date.now())
+  }, [helpersOpen, setHelpersOpen])
   const [selected, setSelected] = useState<BrickSelection | null>(null)
   const [dropActive, setDropActive] = useState(false)
 
@@ -271,6 +290,17 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
 
   /* ── shell ── */
   useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "b") {
+        event.preventDefault()
+        toggleHelpers()
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [toggleHelpers])
+
+  useEffect(() => {
     document.body.dataset.shell = "studio"
     return () => {
       delete document.body.dataset.shell
@@ -300,6 +330,8 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
         voiceSupported={voice.supported}
         onToggleVoice={voice.toggle}
         onShare={() => setShareOpen(true)}
+        helpersOpen={helpersOpen}
+        onToggleHelpers={toggleHelpers}
         onUndo={() => canvas.current?.undo()}
         onRedo={() => canvas.current?.redo()}
         canEdit={view === "bricks" && !building}
@@ -393,6 +425,9 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
           sending={sending}
           say={voice.say}
           voiceOn={voice.enabled}
+          open={helpersOpen}
+          onToggle={toggleHelpers}
+          closedAt={helpersClosedAt}
         />
       </div>
 
@@ -427,6 +462,13 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
       ) : null}
     </div>
   )
+}
+
+/** Stored preferences are strings; anything unrecognised falls back to the default. */
+function parseFlag(raw: string): boolean | null {
+  if (raw === "true") return true
+  if (raw === "false") return false
+  return null
 }
 
 /* ════════════════════════════════════════════════════════════════════════

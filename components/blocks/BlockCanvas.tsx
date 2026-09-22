@@ -28,7 +28,7 @@ import {
   LEGO_RENDERER,
   registerLegoRenderer,
 } from "@/components/blocks/legoRenderer"
-import { BLOCK, type WorkspaceState } from "@/lib/core/blocks"
+import { BLOCK, ONE_PER_PROJECT, type WorkspaceState } from "@/lib/core/blocks"
 
 /** What happened when a child added a brick. */
 export interface AddResult {
@@ -461,10 +461,14 @@ export function addBrick(
   const tops = workspace.getTopBlocks(true)
   const goal = tops.find((b) => b.type === BLOCK.goal)
 
-  if (type === BLOCK.goal && goal) {
+  // One-per-project bricks, checked across the whole workspace rather than only
+  // the connected stack: a spare left floating still counts, because the child can
+  // drag it in at any moment.
+  const onlyOne = ONE_PER_PROJECT[type]
+  if (onlyOne && workspace.getAllBlocks(false).some((b) => b.type === type)) {
     return {
       ok: false,
-      message: "You already have a Goal brick — there's only ever one.",
+      message: `You already have a “${onlyOne}…” brick, and one is all it takes.`,
     }
   }
 

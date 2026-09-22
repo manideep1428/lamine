@@ -150,7 +150,7 @@ describe("tapping a brick, with no drop point", () => {
     const { workspace } = seeded()
     const result = addBrick(workspace, BLOCK.goal, null)
     expect(result.ok).toBe(false)
-    expect(result.message).toMatch(/only ever one/)
+    expect(result.message).toMatch(/already have/)
   })
 
   it("allows only one Show it brick", () => {

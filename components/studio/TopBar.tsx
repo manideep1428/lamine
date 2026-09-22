@@ -1,7 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { Redo2, Share2, Undo2, Volume2, VolumeX } from "lucide-react"
+import {
+  PanelRight,
+  Redo2,
+  Share2,
+  Undo2,
+  Volume2,
+  VolumeX,
+} from "lucide-react"
 
 import { GoButton } from "@/components/studio/GoButton"
 import { cn } from "@/lib/utils"
@@ -19,6 +26,8 @@ interface TopBarProps {
   voiceSupported: boolean
   onToggleVoice: () => void
   onShare: () => void
+  helpersOpen: boolean
+  onToggleHelpers: () => void
   onUndo: () => void
   onRedo: () => void
   /** Undo/redo only make sense while the bricks are editable. */
@@ -43,6 +52,8 @@ export function TopBar({
   voiceSupported,
   onToggleVoice,
   onShare,
+  helpersOpen,
+  onToggleHelpers,
   onUndo,
   onRedo,
   canEdit,
@@ -119,6 +130,18 @@ export function TopBar({
 
       <IconButton label="Share or download" onClick={onShare}>
         <Share2 className="size-4" />
+      </IconButton>
+
+      <IconButton
+        label={
+          helpersOpen
+            ? "Hide your helpers (Ctrl+B)"
+            : "Show your helpers (Ctrl+B)"
+        }
+        onClick={onToggleHelpers}
+        pressed={helpersOpen}
+      >
+        <PanelRight className="size-4" />
       </IconButton>
 
       <GoButton

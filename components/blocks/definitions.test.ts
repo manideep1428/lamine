@@ -485,6 +485,6 @@ describe("dropping bricks directly onto blocks", () => {
 
     const result = addBrick(workspace, BLOCK.goal, { x: 50, y: 50 })
     expect(result.ok).toBe(false)
-    expect(result.message).toMatch(/already have a Goal brick/)
+    expect(result.message).toMatch(/already have a .*Make a/)
   })
 })

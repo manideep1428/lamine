@@ -2,6 +2,7 @@
 
 - **Project:** lamine
 - **Event:** Convex All Gas Hackathon
+- **Challenge:** Build a new full-stack app: Convex runs it, Firecrawl feeds it data, AgentMail gives it an inbox. Use Codex or any agent with the Convex plugin. Three weeks to ship something people can use.
 - **What it does:** Children aged 8-14 snap bricks that describe a game or website, then AI agents write the real code in a sandbox and hand it back playable in the browser.
 - **Live app:** https://glad-curlew-471.convex.site
 - **Repo:** none
@@ -12,7 +13,7 @@
 - **Auth:** none
 - **AI models:** gpt-5.6-luna
 - **Started:** 2026-09-22T05:05:26Z
-- **Last updated:** 2026-09-22T16:57:18Z
+- **Last updated:** 2026-09-22T17:25:33Z
 
 ## Log
 
@@ -119,3 +120,16 @@ so the tester is told it can check structure and never claim a behaviour was
 observed, and both the planner and the builder are told never to touch a pin the
 child did not list. Compiling the sketch and flashing over Web Serial are the next
 steps, not part of this. 244 tests.
+### 2026-09-22 - working tree
+Tightened the brick rules and made the home page tell the truth about what can be
+built. "Make it like" and "Make it look" are now one-per-project like Goal and
+Show it: a second copy could only overwrite the first, so the tray refuses it and
+the interpreter reports a duplicate that arrived another way. Two parts on one pin
+is reported by name. The top brick wins rather than the bottom one, so the result
+does not depend on stack order (`lib/core/blocks.ts`, `components/blocks/`).
+
+The helpers panel collapses to a rail with a toggle or Ctrl+B, remembered across
+visits, keeping the three helpers visible with a dot when they have said something
+new. The home page hero now switches between a game, a website and a board
+project, because it described only games after the device target landed
+(`app/page.tsx`, `components/studio/BuddyDock.tsx`). 262 tests.
