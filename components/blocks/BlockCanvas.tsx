@@ -153,7 +153,13 @@ export function BlockCanvas({
       if (!block) return
       // Same value, no event: otherwise every keystroke is an undo step.
       if (block.getFieldValue(field) === value) return
-      block.setFieldValue(value, field)
+      try {
+        block.setFieldValue(value, field)
+      } catch (error) {
+        // A field validator can refuse a value. Losing the keystroke is better
+        // than an exception tearing down the panel the child is typing into.
+        console.warn(`Could not set ${field}:`, error)
+      }
     },
     removeBrick(blockId: string) {
       const block = workspaceRef.current?.getBlockById(blockId)
@@ -210,11 +216,30 @@ export function BlockCanvas({
     // look like a change the kid made.
     if (initialRef.current) loadInto(workspace, initialRef.current)
 
+    /**
+     * Which brick the editor panel is showing.
+     *
+     * Deliberately not Blockly's own selection. The panel's inputs live outside
+     * the canvas, so focusing one makes Blockly drop its selection — and if that
+     * closed the panel, a child could never type in it.
+     */
+    const panelBlockId = { current: null as string | null }
+
+    const report = (block: Blockly.Block | null) => {
+      panelBlockId.current = block?.id ?? null
+      onSelectRef.current(block ? describe(block) : null)
+    }
+
     const handleChange = (event: Blockly.Events.Abstract) => {
       if (event.type === Blockly.Events.SELECTED) {
         const id = (event as Blockly.Events.Selected).newElementId
-        const block = id ? workspace.getBlockById(id) : null
-        onSelectRef.current(block ? describe(block) : null)
+        // Only a *new* selection moves the panel. A null id means Blockly let go
+        // of the selection, which happens the moment focus lands in the panel's
+        // own textarea; closing the panel there was the bug that made the field
+        // impossible to fill in.
+        if (!id) return
+        const block = workspace.getBlockById(id)
+        if (block) report(block)
         return
       }
 
@@ -228,12 +253,23 @@ export function BlockCanvas({
         ) as unknown as WorkspaceState
       )
 
+      // The panel is showing a brick that has just been binned.
+      if (
+        panelBlockId.current &&
+        !workspace.getBlockById(panelBlockId.current)
+      ) {
+        report(null)
+        return
+      }
+
       // A field edited on the canvas has to be reflected back in the panel.
+      // Keyed off the panel's own brick rather than Blockly's selection, for the
+      // same reason as above.
       if (event.type === Blockly.Events.BLOCK_CHANGE) {
         const id = (event as Blockly.Events.BlockChange).blockId
-        const block = id ? workspace.getBlockById(id) : null
-        if (block && Blockly.common.getSelected()?.id === id) {
-          onSelectRef.current(describe(block))
+        if (id && id === panelBlockId.current) {
+          const block = workspace.getBlockById(id)
+          if (block) report(block)
         }
       }
     }
