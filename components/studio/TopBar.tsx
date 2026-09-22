@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 
 import { GoButton } from "@/components/studio/GoButton"
+import { Logo } from "@/components/studio/Logo"
 import { cn } from "@/lib/utils"
 
 interface TopBarProps {
@@ -62,12 +63,11 @@ export function TopBar({
     <header className="z-20 flex h-16 shrink-0 items-center gap-3 border-b border-line bg-surface px-3">
       <Link
         href="/"
-        className="brick bg-brick-red px-3 py-2"
+        className="shrink-0 rounded-lg p-1 hover:bg-paper-sunken"
         title="My projects"
       >
-        <span className="font-display text-base leading-none font-bold tracking-tight">
-          lamine
-        </span>
+        <Logo />
+        <span className="sr-only">My projects</span>
       </Link>
 
       <label className="sr-only" htmlFor="project-name">

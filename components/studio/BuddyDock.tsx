@@ -52,6 +52,8 @@ interface BuddyDockProps {
   onToggle: () => void
   /** When the panel was collapsed, for counting what the child has not seen. */
   closedAt: number | null
+  /** Sits above the crew when open. Carries "What you're building". */
+  header?: React.ReactNode
 }
 
 /**
@@ -77,6 +79,7 @@ export function BuddyDock({
   open,
   onToggle,
   closedAt,
+  header,
 }: BuddyDockProps) {
   const [showRaw, setShowRaw] = useState(false)
   const [draft, setDraft] = useState("")
@@ -188,6 +191,8 @@ export function BuddyDock({
       className="flex w-80 shrink-0 flex-col border-l border-line bg-surface"
       aria-label="Your helpers"
     >
+      {header}
+
       {/* The crew, as three bricks. */}
       <div className="flex items-center gap-1.5 border-b-2 border-line p-2">
         <button

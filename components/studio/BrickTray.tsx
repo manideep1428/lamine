@@ -1,9 +1,43 @@
 "use client"
 
+import {
+  Bookmark,
+  BookOpen,
+  Cable,
+  ChevronsRight,
+  Dices,
+  Eye,
+  Rocket,
+  Search,
+  SquareCheck,
+  Zap,
+  type LucideIcon,
+} from "lucide-react"
 import { useState } from "react"
 
 import { BRICK, TRAY, type TrayBrick } from "@/components/blocks/definitions"
+import { BLOCK } from "@/lib/core/blocks"
 import { cn } from "@/lib/utils"
+
+/**
+ * One icon per brick.
+ *
+ * Kept here rather than in the block definitions so that module stays plain data
+ * and can be imported by tests that never touch React. The icon says what a brick
+ * does at a glance, which matters in a tray a child scans rather than reads.
+ */
+const BRICK_ICON: Record<string, LucideIcon> = {
+  [BLOCK.goal]: Zap,
+  [BLOCK.like]: Dices,
+  [BLOCK.feature]: SquareCheck,
+  [BLOCK.whenThen]: ChevronsRight,
+  [BLOCK.remembers]: Bookmark,
+  [BLOCK.proof]: Search,
+  [BLOCK.style]: Eye,
+  [BLOCK.rule]: BookOpen,
+  [BLOCK.part]: Cable,
+  [BLOCK.show]: Rocket,
+}
 
 /** The payload a dragged brick carries. */
 export const BRICK_DRAG_TYPE = "application/x-lamine-brick"
@@ -96,6 +130,7 @@ function BrickButton({
   onDragState: (type: string | null) => void
 }) {
   const colour = BRICK[brick.colour]
+  const Icon = BRICK_ICON[brick.type]
 
   return (
     <button
@@ -117,12 +152,15 @@ function BrickButton({
       onBlur={() => onHover(null)}
       title={brick.hint}
       className={cn(
-        "brick w-full cursor-grab px-3 py-2.5 text-left text-[13px] leading-tight active:cursor-grabbing",
+        "brick flex w-full cursor-grab items-center gap-2 px-3 py-2.5 text-left text-[13px] leading-tight active:cursor-grabbing",
         dragging && "opacity-45"
       )}
       style={{ background: colour.fill, color: colour.ink }}
     >
-      {brick.label}
+      {Icon ? (
+        <Icon className="size-4 shrink-0 opacity-90" aria-hidden />
+      ) : null}
+      <span className="min-w-0 flex-1">{brick.label}</span>
     </button>
   )
 }

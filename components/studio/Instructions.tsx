@@ -26,15 +26,13 @@ export function Instructions({ spec, warnings, problems }: InstructionsProps) {
 
   return (
     <section
-      className={cn(
-        "panel pointer-events-auto absolute bottom-4 left-4 z-10 max-w-md overflow-hidden",
-        open ? "w-[26rem]" : "w-auto"
-      )}
+      className="border-b border-line bg-surface"
       aria-label="What you're building"
     >
       <button
         type="button"
         onClick={() => setOpen((was) => !was)}
+        aria-expanded={open}
         className="flex w-full items-center gap-1.5 px-3 py-2 text-left"
       >
         <ChevronRight
@@ -47,14 +45,14 @@ export function Instructions({ spec, warnings, problems }: InstructionsProps) {
           What you&apos;re building
         </span>
         {!open && problems.length > 0 ? (
-          <span className="ml-1 rounded bg-brick-amber px-1.5 text-[10px] font-bold text-ink">
+          <span className="ml-1 rounded bg-brick-amber px-1.5 text-[10px] font-bold text-white">
             {problems.length}
           </span>
         ) : null}
       </button>
 
       {open ? (
-        <div className="space-y-2 border-t-2 border-line px-3 py-2 text-[13px]">
+        <div className="max-h-72 space-y-2 overflow-y-auto border-t border-line px-3 py-2 text-[13px]">
           {problems.length > 0 ? (
             <ul className="space-y-1">
               {problems.map((problem) => (

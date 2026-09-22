@@ -367,10 +367,11 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
             {dropActive ? (
               <div className="pointer-events-none absolute inset-2 z-20 rounded-xl border-2 border-dashed border-brick-blue/60 bg-brick-blue/5" />
             ) : null}
-            {/* One slot, two states: the selected brick's words while a brick is
-                selected, otherwise what the whole stack adds up to. */}
-            <div className="pointer-events-none absolute inset-0">
-              {selected ? (
+            {/* The brick editor stays over the canvas, next to the brick it edits.
+                "What you're building" moved to the right column, where it can be
+                read while the canvas keeps its full width. */}
+            {selected ? (
+              <div className="pointer-events-none absolute inset-0">
                 <BrickEditor
                   selection={selected}
                   onChange={onFieldChange}
@@ -378,14 +379,8 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
                   onClose={() => setSelected(null)}
                   disabled={building}
                 />
-              ) : (
-                <Instructions
-                  spec={interpreted.spec}
-                  warnings={interpreted.warnings}
-                  problems={interpreted.problems}
-                />
-              )}
-            </div>
+              </div>
+            ) : null}
             {!building ? (
               <button
                 type="button"
@@ -429,6 +424,13 @@ function StudioInner({ projectId }: { projectId: Id<"projects"> }) {
           open={helpersOpen}
           onToggle={toggleHelpers}
           closedAt={helpersClosedAt}
+          header={
+            <Instructions
+              spec={interpreted.spec}
+              warnings={interpreted.warnings}
+              problems={interpreted.problems}
+            />
+          }
         />
       </div>
 
