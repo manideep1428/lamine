@@ -17,13 +17,15 @@ export interface TaskRow {
   order: number
 }
 
-/* Node geometry. Fixed, because a layered graph of 4–14 nodes does not need a
-   layout engine — and a hand-rolled layout means no new dependency for one panel. */
-const NODE_W = 184
-const NODE_H = 68
-const GAP_X = 72
-const GAP_Y = 18
-const PAD = 24
+/* Node geometry. Layers run DOWN the page, not across: a plan is usually a chain,
+   and six steps across overflowed the pane and clipped the last one. Vertical also
+   matches how the bricks and the build rail already read, and it leaves horizontal
+   room for the tasks that genuinely run in parallel. */
+const NODE_W = 232
+const NODE_H = 66
+const GAP_X = 20
+const GAP_Y = 40
+const PAD = 20
 
 const ROLE_LABEL: Record<string, string> = {
   builder: "builds",
@@ -168,9 +170,9 @@ interface Placed {
 
 /**
  * Put every task in a dependency layer: layer 0 has no dependencies, and a task
- * sits one layer right of its deepest dependency. Cycles cannot reach here —
- * `validatePlan` rejects them — but the guard keeps a hand-edited plan from
- * hanging the UI.
+ * sits one layer *below* its deepest dependency, with tasks that can run at the
+ * same time side by side in that row. Cycles cannot reach here — `validatePlan`
+ * rejects them — but the guard keeps a hand-edited plan from hanging the UI.
  */
 function layoutTasks(tasks: TaskRow[]) {
   const byId = new Map(tasks.map((t) => [t.taskId, t]))
@@ -205,8 +207,9 @@ function layoutTasks(tasks: TaskRow[]) {
     group.forEach((task, index) => {
       nodes.push({
         task,
-        x: PAD + level * (NODE_W + GAP_X),
-        y: PAD + index * (NODE_H + GAP_Y),
+        // Siblings across, layers down.
+        x: PAD + index * (NODE_W + GAP_X),
+        y: PAD + level * (NODE_H + GAP_Y),
       })
     })
   }
@@ -217,14 +220,15 @@ function layoutTasks(tasks: TaskRow[]) {
       .map((dep) => at.get(dep))
       .filter((from): from is Placed => Boolean(from))
       .map((from) => {
-        const x1 = from.x + NODE_W
-        const y1 = from.y + NODE_H / 2
-        const x2 = node.x
-        const y2 = node.y + NODE_H / 2
-        const mid = (x1 + x2) / 2
+        // Out of the bottom of the dependency, into the top of the task.
+        const x1 = from.x + NODE_W / 2
+        const y1 = from.y + NODE_H
+        const x2 = node.x + NODE_W / 2
+        const y2 = node.y
+        const mid = (y1 + y2) / 2
         return {
           key: `${from.task.taskId}->${node.task.taskId}`,
-          d: `M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}`,
+          d: `M ${x1} ${y1} C ${x1} ${mid}, ${x2} ${mid}, ${x2} ${y2}`,
           done: from.task.status === "done",
         }
       })
