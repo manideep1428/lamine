@@ -5,7 +5,7 @@
 - **Challenge:** Build a new full-stack app: Convex runs it, Firecrawl feeds it data, AgentMail gives it an inbox. Use Codex or any agent with the Convex plugin. Three weeks to ship something people can use.
 - **What it does:** Children aged 8-14 snap bricks that describe a game, a website or something wired to an ESP32, then AI agents write the real code in a sandbox and hand it back playable in the browser or ready to upload.
 - **Live app:** https://glad-curlew-471.convex.site
-- **Repo:** none
+- **Repo:** https://github.com/manideep1428/lamine
 - **Frontend:** Convex static hosting
 - **Convex deployment:** https://glad-curlew-471.convex.cloud
 - **Components:** @convex-dev/static-hosting
@@ -13,7 +13,7 @@
 - **Auth:** none
 - **AI models:** gpt-5.6-luna
 - **Started:** 2026-09-22T05:05:26Z
-- **Last updated:** 2026-09-22T17:53:08Z
+- **Last updated:** 2026-09-22T18:15:57Z
 
 ## Log
 
@@ -160,3 +160,29 @@ side, which fits any pane and matches how the bricks read
 Tray bricks carry icons, "What you're building" moved off the canvas into the
 right panel where it no longer covers the board, and the studio wordmark became a
 logo slot. 269 tests.
+
+### 2026-09-22 - 1b94849
+Added a brick that reads the web, and wired in the logo.
+
+"Look up ___" lets a child ask their helpers to read about something while the
+project is built. The lookup runs at build time inside the Convex action, never in
+the child's project and never in the sandbox: a published project is public static
+files, so a runtime lookup would mean shipping an API key in readable source or
+standing up a public endpoint with its own rate-limiting and abuse story. The page
+also still works with no network. Both prompts carry the rule, and a test asserts it
+(`convex/lib/firecrawl.ts`, `lib/core/lookup.test.ts`).
+
+The tool is only offered when the child asked for a lookup and a key is configured,
+so the model is never told about a tool that cannot work; reviewers never get it.
+Capped at five lookups, three results each, 4000 characters. A timeout or malformed
+payload tells the agent nothing came back and not to invent facts, and the build
+carries on.
+
+Not verified against the live Firecrawl API: no key is set, so the brick is inert in
+production and the response parsing is written defensively against a shape inferred
+from their documented v1 search endpoint rather than one observed. 280 tests.
+
+AgentMail was considered and not built. Sending mail needs a recipient, and a child
+choosing recipients is a different class of risk from reading a public page: it wants
+a grown-up's address captured once and locked, which is a consent flow rather than a
+brick.
